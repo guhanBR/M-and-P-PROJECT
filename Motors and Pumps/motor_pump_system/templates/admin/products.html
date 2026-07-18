@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Admin | MotoParts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-products.css') }}">
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="{{ url_for('admin.dashboard') }}" class="sidebar-brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/><path d="M16 8L18.5 13H13.5L16 8Z" fill="#1565C0"/><circle cx="16" cy="19" r="4.5" stroke="#1565C0" stroke-width="1.5" fill="none"/><circle cx="16" cy="19" r="1.8" fill="#1565C0"/></svg>
+          </div>
+          <span class="brand-text">Moto<span>Parts</span></span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+          <li><a href="{{ url_for('admin.products') }}" class="active"><i class="fas fa-box"></i><span>Products</span></a></li>
+          <li><a href="{{ url_for('admin.categories') }}"><i class="fas fa-tags"></i><span>Categories</span></a></li>
+          <li><a href="{{ url_for('admin.stock') }}"><i class="fas fa-warehouse"></i><span>Inventory</span></a></li>
+          <li><a href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag"></i><span>Orders</span></a></li>
+          <li><a href="{{ url_for('admin.service_reminders') }}"><i class="fas fa-calendar-check"></i><span>Services</span></a></li>
+          <li class="nav-divider"></li>
+          <li><a href="{{ url_for('customer.index') }}" target="_blank"><i class="fas fa-external-link-alt"></i><span>View Store</span></a></li>
+          <li><a href="{{ url_for('auth.logout') }}" class="nav-logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer"><p>&copy; 2026 MotoParts</p></div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <div class="main-area">
+      <!-- Top Navbar -->
+      <header class="topbar" id="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Products</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearch" placeholder="Search products...">
+          </div>
+          <div class="topbar-icons">
+            <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+              <i class="fas fa-bell"></i>
+              <span class="notif-dot"></span>
+            </button>
+          </div>
+          <div class="topbar-profile" id="profileBtn">
+            <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+            <span class="profile-name">Admin</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar"><i class="fas fa-user-shield"></i></div>
+              <div><p class="dropdown-name">Administrator</p><p class="dropdown-email">admin@motoparts.com</p></div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#"><i class="fas fa-user-cog"></i> Account Settings</a>
+            <div class="dropdown-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content-scroll">
+        <main class="main-content">
+
+          <!-- Toolbar -->
+          <div class="products-toolbar">
+            <div class="toolbar-left">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by name, part number...">
+              </div>
+              <div class="filter-group">
+                <div class="filter-select">
+                  <i class="fas fa-tag"></i>
+                  <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Bearings">Bearings</option>
+                    <option value="Mechanical Seals">Mechanical Seals</option>
+                    <option value="Pump Impellers">Pump Impellers</option>
+                    <option value="Pump Shafts">Pump Shafts</option>
+                    <option value="Capacitors">Capacitors</option>
+                    <option value="Couplings">Couplings</option>
+                    <option value="Fan Blades">Fan Blades</option>
+                    <option value="Oil Seals">Oil Seals</option>
+                    <option value="Gaskets">Gaskets</option>
+                    <option value="Accessories">Accessories</option>
+                  </select>
+                </div>
+                <div class="filter-select">
+                  <i class="fas fa-industry"></i>
+                  <select id="brandFilter">
+                    <option value="">All Brands</option>
+                    <option value="SKF">SKF</option>
+                    <option value="John Crane">John Crane</option>
+                    <option value="Grundfos">Grundfos</option>
+                    <option value="KSB">KSB</option>
+                    <option value="ABB">ABB</option>
+                    <option value="Siemens">Siemens</option>
+                    <option value="Eaton">Eaton</option>
+                    <option value="Parker">Parker</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="toolbar-right">
+              <span class="result-count" id="resultCount">24 products</span>
+              <a href="{{ url_for('admin.add_product') }}" class="btn-add">
+                <i class="fas fa-plus"></i> Add Product
+              </a>
+            </div>
+          </div>
+
+          <!-- Products Table -->
+          <div class="panel">
+            <div class="table-wrapper">
+              <table class="data-table" id="productsTable">
+                <thead>
+                  <tr>
+                    <th class="th-img">Image</th>
+                    <th>Product Name</th>
+                    <th>Part Number</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th class="th-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none">
+              <i class="fas fa-box-open"></i>
+              <p>No products found</p>
+              <span>Try adjusting your search or filters</span>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Product Modal -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Product Details</h3>
+        <button class="modal-close" id="viewModalClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="viewModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-card modal-sm">
+      <div class="modal-header modal-danger">
+        <h3><i class="fas fa-exclamation-triangle"></i> Delete Product</h3>
+        <button class="modal-close" id="deleteModalClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="deleteProductName"></strong>?</p>
+        <p class="modal-sub">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="deleteCancel">Cancel</button>
+        <button class="btn-delete" id="deleteConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script src="{{ url_for('static', filename='js/admin-products.js') }}"></script>
+</body>
+</html>

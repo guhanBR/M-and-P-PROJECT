@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product — Admin | MotoParts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-add-product.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-edit-product.css') }}">
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="{{ url_for('admin.dashboard') }}" class="sidebar-brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/><path d="M16 8L18.5 13H13.5L16 8Z" fill="#1565C0"/><circle cx="16" cy="19" r="4.5" stroke="#1565C0" stroke-width="1.5" fill="none"/><circle cx="16" cy="19" r="1.8" fill="#1565C0"/></svg>
+          </div>
+          <span class="brand-text">Moto<span>Parts</span></span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar"><i class="fas fa-times"></i></button>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+          <li><a href="{{ url_for('admin.products') }}" class="active"><i class="fas fa-box"></i><span>Products</span></a></li>
+          <li><a href="{{ url_for('admin.categories') }}"><i class="fas fa-tags"></i><span>Categories</span></a></li>
+          <li><a href="{{ url_for('admin.stock') }}"><i class="fas fa-warehouse"></i><span>Inventory</span></a></li>
+          <li><a href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag"></i><span>Orders</span></a></li>
+          <li><a href="{{ url_for('admin.service_reminders') }}"><i class="fas fa-calendar-check"></i><span>Services</span></a></li>
+          <li class="nav-divider"></li>
+          <li><a href="{{ url_for('customer.index') }}" target="_blank"><i class="fas fa-external-link-alt"></i><span>View Store</span></a></li>
+          <li><a href="{{ url_for('auth.logout') }}" class="nav-logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer"><p>&copy; 2026 MotoParts</p></div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <div class="main-area">
+
+      <!-- Top Navbar -->
+      <header class="topbar" id="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Edit Product</h2>
+        </div>
+        <div class="topbar-right">
+          <a href="{{ url_for('admin.products') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Products</a>
+          <div class="topbar-profile" id="profileBtn">
+            <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+            <span class="profile-name">Admin</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar"><i class="fas fa-user-shield"></i></div>
+              <div><p class="dropdown-name">Administrator</p><p class="dropdown-email">admin@motoparts.com</p></div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content-scroll">
+        <main class="main-content">
+
+          <form id="editProductForm" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() if form is defined else '' }}
+
+            <div class="form-grid">
+
+              <!-- Left Column: Basic Info -->
+              <div class="form-col">
+
+                <!-- Basic Information -->
+                <div class="form-card">
+                  <div class="form-card-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Basic Information</h3>
+                  </div>
+                  <div class="form-card-body">
+
+                    <div class="form-group">
+                      <label for="name">Product Name <span class="req">*</span></label>
+                      <div class="input-wrap">
+                        <i class="fas fa-box"></i>
+                        <input type="text" id="name" name="name" required>
+                      </div>
+                      <span class="field-error" id="nameError"></span>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="part_number">Part Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-hashtag"></i>
+                          <input type="text" id="part_number" name="part_number" required readonly>
+                        </div>
+                        <span class="field-hint">Part number cannot be changed</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="brand">Brand <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-industry"></i>
+                          <select id="brand" name="brand" required>
+                            <option value="">Select brand</option>
+                            <option value="SKF">SKF</option>
+                            <option value="John Crane">John Crane</option>
+                            <option value="Grundfos">Grundfos</option>
+                            <option value="KSB">KSB</option>
+                            <option value="ABB">ABB</option>
+                            <option value="Siemens">Siemens</option>
+                            <option value="Eaton">Eaton</option>
+                            <option value="Parker">Parker</option>
+                          </select>
+                        </div>
+                        <span class="field-error" id="brandError"></span>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="category">Category <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-tag"></i>
+                          <select id="category" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="Bearings">Bearings</option>
+                            <option value="Mechanical Seals">Mechanical Seals</option>
+                            <option value="Pump Impellers">Pump Impellers</option>
+                            <option value="Pump Shafts">Pump Shafts</option>
+                            <option value="Capacitors">Capacitors</option>
+                            <option value="Couplings">Couplings</option>
+                            <option value="Fan Blades">Fan Blades</option>
+                            <option value="Oil Seals">Oil Seals</option>
+                            <option value="Gaskets">Gaskets</option>
+                            <option value="Accessories">Accessories</option>
+                          </select>
+                        </div>
+                        <span class="field-error" id="categoryError"></span>
+                      </div>
+                      <div class="form-group">
+                        <label for="price">Price (₹) <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-rupee-sign"></i>
+                          <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+                        <span class="field-error" id="priceError"></span>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="description">Description</label>
+                      <textarea id="description" name="description" rows="4"></textarea>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Compatibility -->
+                <div class="form-card">
+                  <div class="form-card-header">
+                    <i class="fas fa-link"></i>
+                    <h3>Compatibility</h3>
+                  </div>
+                  <div class="form-card-body">
+
+                    <div class="form-group">
+                      <label for="motor_model">Compatible Motor Model</label>
+                      <div class="input-wrap">
+                        <i class="fas fa-cogs"></i>
+                        <input type="text" id="motor_model" name="motor_model">
+                      </div>
+                      <span class="field-hint">Comma-separated for multiple models</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="pump_model">Compatible Pump Model</label>
+                      <div class="input-wrap">
+                        <i class="fas fa-water"></i>
+                        <input type="text" id="pump_model" name="pump_model">
+                      </div>
+                      <span class="field-hint">Comma-separated for multiple models</span>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Specifications -->
+                <div class="form-card">
+                  <div class="form-card-header">
+                    <i class="fas fa-list-ul"></i>
+                    <h3>Specifications</h3>
+                  </div>
+                  <div class="form-card-body">
+                    <div class="specs-list" id="specsList"></div>
+                    <button type="button" class="btn-add-spec" id="addSpecBtn">
+                      <i class="fas fa-plus"></i> Add Specification
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Right Column: Stock & Image -->
+              <div class="form-col">
+
+                <!-- Stock & Pricing -->
+                <div class="form-card">
+                  <div class="form-card-header">
+                    <i class="fas fa-warehouse"></i>
+                    <h3>Stock & Pricing</h3>
+                  </div>
+                  <div class="form-card-body">
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="stock_quantity">Stock Quantity <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-cubes"></i>
+                          <input type="number" id="stock_quantity" name="stock_quantity" min="0" required>
+                        </div>
+                        <span class="field-error" id="stock_quantityError"></span>
+                      </div>
+                      <div class="form-group">
+                        <label for="reorder_level">Reorder Level <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-exclamation-triangle"></i>
+                          <input type="number" id="reorder_level" name="reorder_level" min="0" required>
+                        </div>
+                        <span class="field-error" id="reorder_levelError"></span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Current Image -->
+                <div class="form-card">
+                  <div class="form-card-header">
+                    <i class="fas fa-image"></i>
+                    <h3>Current Image</h3>
+                  </div>
+                  <div class="form-card-body">
+
+                    <div class="current-image" id="currentImage">
+                      <div class="current-img-box">
+                        <i class="fas fa-cog"></i>
+                      </div>
+                      <p class="current-img-name">BRG-6205-2RS.jpg</p>
+                    </div>
+
+                    <div class="upload-zone" id="uploadZone">
+                      <input type="file" id="image_file" name="image_files" accept="image/*" multiple hidden>
+                      <div class="upload-placeholder" id="uploadPlaceholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click or drag to replace image</p>
+                        <span>PNG, JPG, WEBP up to 5MB each</span>
+                      </div>
+                      <div class="upload-preview" id="uploadPreview" style="display:none"></div>
+                    </div>
+                    <span class="field-error" id="imageError"></span>
+
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <a href="{{ url_for('admin.products') }}" class="btn-cancel-edit">
+                <i class="fas fa-times"></i> Cancel
+              </a>
+              <button type="submit" class="btn-save" id="saveBtn">
+                <span class="btn-text"><i class="fas fa-save"></i> Update Product</span>
+                <span class="btn-loader" style="display:none"><span class="spinner"></span> Updating...</span>
+              </button>
+            </div>
+
+          </form>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Toast -->
+  <div class="toast" id="successToast">
+    <i class="fas fa-check-circle"></i>
+    <span>Product updated successfully!</span>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script src="{{ url_for('static', filename='js/admin-edit-product.js') }}"></script>
+</body>
+</html>

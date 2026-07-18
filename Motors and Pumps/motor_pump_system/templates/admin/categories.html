@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories — Admin | MotoParts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-categories.css') }}">
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="{{ url_for('admin.dashboard') }}" class="sidebar-brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/><path d="M16 8L18.5 13H13.5L16 8Z" fill="#1565C0"/><circle cx="16" cy="19" r="4.5" stroke="#1565C0" stroke-width="1.5" fill="none"/><circle cx="16" cy="19" r="1.8" fill="#1565C0"/></svg>
+          </div>
+          <span class="brand-text">Moto<span>Parts</span></span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar"><i class="fas fa-times"></i></button>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+          <li><a href="{{ url_for('admin.products') }}"><i class="fas fa-box"></i><span>Products</span></a></li>
+          <li><a href="{{ url_for('admin.categories') }}" class="active"><i class="fas fa-tags"></i><span>Categories</span></a></li>
+          <li><a href="{{ url_for('admin.stock') }}"><i class="fas fa-warehouse"></i><span>Inventory</span></a></li>
+          <li><a href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag"></i><span>Orders</span></a></li>
+          <li><a href="{{ url_for('admin.service_reminders') }}"><i class="fas fa-calendar-check"></i><span>Services</span></a></li>
+          <li class="nav-divider"></li>
+          <li><a href="{{ url_for('customer.index') }}" target="_blank"><i class="fas fa-external-link-alt"></i><span>View Store</span></a></li>
+          <li><a href="{{ url_for('auth.logout') }}" class="nav-logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer"><p>&copy; 2026 MotoParts</p></div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <div class="main-area">
+
+      <!-- Top Navbar -->
+      <header class="topbar" id="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Categories</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearch" placeholder="Search categories...">
+          </div>
+          <div class="topbar-icons">
+            <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+              <i class="fas fa-bell"></i>
+              <span class="notif-dot"></span>
+            </button>
+          </div>
+          <div class="topbar-profile" id="profileBtn">
+            <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+            <span class="profile-name">Admin</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar"><i class="fas fa-user-shield"></i></div>
+              <div><p class="dropdown-name">Administrator</p><p class="dropdown-email">admin@motoparts.com</p></div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content-scroll">
+        <main class="main-content">
+
+          <!-- Stats Row -->
+          <div class="cat-stats">
+            <div class="cat-stat-card">
+              <div class="cat-stat-icon blue"><i class="fas fa-tags"></i></div>
+              <div class="cat-stat-info">
+                <span class="cat-stat-value" id="totalCount">10</span>
+                <span class="cat-stat-label">Total Categories</span>
+              </div>
+            </div>
+            <div class="cat-stat-card">
+              <div class="cat-stat-icon green"><i class="fas fa-check-circle"></i></div>
+              <div class="cat-stat-info">
+                <span class="cat-stat-value" id="activeCount">10</span>
+                <span class="cat-stat-label">Active</span>
+              </div>
+            </div>
+            <div class="cat-stat-card">
+              <div class="cat-stat-icon purple"><i class="fas fa-box"></i></div>
+              <div class="cat-stat-info">
+                <span class="cat-stat-value" id="totalProducts">24</span>
+                <span class="cat-stat-label">Total Products</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="cat-toolbar">
+            <div class="cat-toolbar-left">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by category name...">
+              </div>
+              <span class="result-count" id="resultCount">10 categories</span>
+            </div>
+            <button class="btn-add" id="addCatBtn">
+              <i class="fas fa-plus"></i> Add Category
+            </button>
+          </div>
+
+          <!-- Categories Table -->
+          <div class="panel">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="th-color">Color</th>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Total Products</th>
+                    <th>Status</th>
+                    <th class="th-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="catBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none">
+              <i class="fas fa-tags"></i>
+              <p>No categories found</p>
+              <span>Try adjusting your search</span>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="catModal">
+    <div class="modal-card">
+      <div class="modal-header" id="catModalHeader">
+        <h3 id="catModalTitle"><i class="fas fa-plus"></i> Add Category</h3>
+        <button class="modal-close" id="catModalClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="catForm" novalidate>
+          <div class="form-group">
+            <label for="catName">Category Name <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fas fa-tag"></i>
+              <input type="text" id="catName" placeholder="e.g. Pump Impellers" required>
+            </div>
+            <span class="field-error" id="catNameError"></span>
+          </div>
+          <div class="form-group">
+            <label for="catDesc">Description</label>
+            <textarea id="catDesc" rows="3" placeholder="Optional description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="catColor">Color</label>
+            <div class="color-options" id="colorOptions">
+              <button type="button" class="color-opt active" data-color="#1565C0" style="background:#1565C0"></button>
+              <button type="button" class="color-opt" data-color="#0D9488" style="background:#0D9488"></button>
+              <button type="button" class="color-opt" data-color="#F59E0B" style="background:#F59E0B"></button>
+              <button type="button" class="color-opt" data-color="#7C3AED" style="background:#7C3AED"></button>
+              <button type="button" class="color-opt" data-color="#DC2626" style="background:#DC2626"></button>
+              <button type="button" class="color-opt" data-color="#16A34A" style="background:#16A34A"></button>
+              <button type="button" class="color-opt" data-color="#64748B" style="background:#64748B"></button>
+              <button type="button" class="color-opt" data-color="#EC4899" style="background:#EC4899"></button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="catModalCancel">Cancel</button>
+        <button class="btn-save-modal" id="catModalSave">
+          <span class="btn-text">Save Category</span>
+          <span class="btn-loader" style="display:none"><span class="spinner"></span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-card modal-sm">
+      <div class="modal-header modal-danger">
+        <h3><i class="fas fa-exclamation-triangle"></i> Delete Category</h3>
+        <button class="modal-close" id="deleteModalClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="deleteCatName"></strong>?</p>
+        <p class="modal-sub">This will also remove all products in this category. This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="deleteCancelBtn">Cancel</button>
+        <button class="btn-delete" id="deleteConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMsg">Category added!</span>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script src="{{ url_for('static', filename='js/admin-categories.js') }}"></script>
+</body>
+</html>

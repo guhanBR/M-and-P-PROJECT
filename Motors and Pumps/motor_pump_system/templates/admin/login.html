@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — MotoParts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-login.css') }}">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="bg-decoration">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+    </div>
+
+    <div class="login-container">
+      <div class="login-card">
+        <div class="card-header">
+          <div class="logo-wrapper">
+            <div class="logo-icon">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="20" stroke="#1565C0" stroke-width="2.5" fill="#E3F2FD"/>
+                <path d="M24 12 L28 20 L24 18 L20 20 Z" fill="#1565C0"/>
+                <circle cx="24" cy="28" r="6" stroke="#1565C0" stroke-width="2" fill="none"/>
+                <circle cx="24" cy="28" r="2.5" fill="#1565C0"/>
+                <path d="M18 18 L24 14 L30 18" stroke="#1565C0" stroke-width="2" stroke-linecap="round" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <h1 class="project-name">Moto<span>Parts</span></h1>
+          <p class="project-tagline">Spare Parts Ordering System for Motors &amp; Pumps</p>
+          <div class="admin-badge">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1L10 5.5L15 6L11.5 9.5L12.5 14.5L8 12L3.5 14.5L4.5 9.5L1 6L6 5.5L8 1Z" fill="#1565C0"/>
+            </svg>
+            Admin Access
+          </div>
+        </div>
+
+        <div class="card-body">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for cat, msg in messages %}
+                <div class="flash-message flash-{{ cat }}">{{ msg }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <form id="adminLoginForm" method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 20 20" fill="none">
+                  <path d="M2 5L10 11L18 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                {{ form.email(class="input-field", id="email", placeholder="admin@motoparts.com", autocomplete="email") }}
+              </div>
+              <span class="error-message" id="emailError">
+                {% if form.email.errors %}{% for e in form.email.errors %}{{ e }}{% endfor %}{% endif %}
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 20 20" fill="none">
+                  <rect x="4" y="9" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M7 9V6C7 4.34 8.34 3 10 3C11.66 3 13 4.34 13 6V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="10" cy="13.5" r="1.5" fill="currentColor"/>
+                </svg>
+                {{ form.password(class="input-field", id="password", placeholder="Enter your password", autocomplete="current-password") }}
+                <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+                  <svg class="eye-open" viewBox="0 0 20 20" fill="none">
+                    <path d="M1 10C1 10 4 4 10 4C16 4 19 10 19 10C19 10 16 16 10 16C4 16 1 10 1 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                  <svg class="eye-closed" viewBox="0 0 20 20" fill="none" style="display:none">
+                    <path d="M3 3L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M8.5 4.5C9 4.2 9.5 4 10 4C13.3 4 16 10 16 10C16 10 15 12.5 13 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4.5 7.5C3 9 2 10 2 10C2 10 5 16 10 16C11 16 12 15.7 13 15.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <span class="error-message" id="passwordError">
+                {% if form.password.errors %}{% for e in form.password.errors %}{{ e }}{% endfor %}{% endif %}
+              </span>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-wrapper">
+                {{ form.remember(class="checkbox-input") }}
+                <span class="checkmark"></span>
+                <span class="checkbox-label">Remember me</span>
+              </label>
+              <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+              <span class="btn-text">Sign In</span>
+              <span class="btn-loader" style="display:none">
+                <span class="spinner"></span>
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <p>&copy; 2026 MotoParts — Spare Parts Ordering System for Motors &amp; Pumps</p>
+        <p class="footer-sub">Final Year Capstone Project</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/admin-login.js') }}"></script>
+</body>
+</html>
