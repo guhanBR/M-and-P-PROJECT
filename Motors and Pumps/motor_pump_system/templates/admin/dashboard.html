@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — MotoParts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="{{ url_for('admin.dashboard') }}" class="sidebar-brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/><path d="M16 8L18.5 13H13.5L16 8Z" fill="#1565C0"/><circle cx="16" cy="19" r="4.5" stroke="#1565C0" stroke-width="1.5" fill="none"/><circle cx="16" cy="19" r="1.8" fill="#1565C0"/></svg>
+          </div>
+          <span class="brand-text">Moto<span>Parts</span></span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="{{ url_for('admin.dashboard') }}" class="active">
+              <i class="fas fa-th-large"></i><span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('admin.products') }}">
+              <i class="fas fa-box"></i><span>Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('admin.categories') }}">
+              <i class="fas fa-tags"></i><span>Categories</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('admin.stock') }}">
+              <i class="fas fa-warehouse"></i><span>Inventory</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('admin.orders') }}">
+              <i class="fas fa-shopping-bag"></i><span>Orders</span>
+              {% if pending_orders is defined and pending_orders > 0 %}
+              <span class="nav-badge">{{ pending_orders }}</span>
+              {% endif %}
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('admin.service_reminders') }}">
+              <i class="fas fa-calendar-check"></i><span>Services</span>
+            </a>
+          </li>
+          <li class="nav-divider"></li>
+          <li>
+            <a href="{{ url_for('customer.index') }}" target="_blank">
+              <i class="fas fa-external-link-alt"></i><span>View Store</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('auth.logout') }}" class="nav-logout">
+              <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>&copy; 2026 MotoParts</p>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <div class="main-area">
+
+      <!-- Top Navbar -->
+      <header class="topbar" id="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h2 class="page-title">Dashboard</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearch" placeholder="Search products, orders...">
+          </div>
+          <div class="topbar-icons">
+            <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+              <i class="fas fa-bell"></i>
+              <span class="notif-dot"></span>
+            </button>
+          </div>
+          <div class="topbar-profile" id="profileBtn">
+            <div class="profile-avatar">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <span class="profile-name">Admin</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar"><i class="fas fa-user-shield"></i></div>
+              <div>
+                <p class="dropdown-name">Administrator</p>
+                <p class="dropdown-email">admin@motoparts.com</p>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#"><i class="fas fa-user-cog"></i> Account Settings</a>
+            <a href="#"><i class="fas fa-key"></i> Change Password</a>
+            <div class="dropdown-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+          <!-- Notification Dropdown -->
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+              <h4>Notifications</h4>
+              <button class="notif-clear" id="notifClear">Clear all</button>
+            </div>
+            <div class="notif-list">
+              <div class="notif-item unread">
+                <div class="notif-icon blue"><i class="fas fa-shopping-bag"></i></div>
+                <div class="notif-content">
+                  <p>New order #ORD-1042 received</p>
+                  <span>2 minutes ago</span>
+                </div>
+              </div>
+              <div class="notif-item unread">
+                <div class="notif-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="notif-content">
+                  <p>Low stock alert: Impeller X200</p>
+                  <span>15 minutes ago</span>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="notif-content">
+                  <p>Order #ORD-1038 delivered</p>
+                  <span>1 hour ago</span>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon orange"><i class="fas fa-user-plus"></i></div>
+                <div class="notif-content">
+                  <p>New customer registration</p>
+                  <span>3 hours ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="content-scroll">
+        <main class="main-content">
+
+          <!-- Summary Cards -->
+          <section class="summary-cards">
+            <div class="summary-card" data-accent="blue">
+              <div class="card-icon"><i class="fas fa-box"></i></div>
+              <div class="card-info">
+                <span class="card-value">{{ total_products if total_products is defined else 24 }}</span>
+                <span class="card-label">Total Products</span>
+              </div>
+            </div>
+            <div class="summary-card" data-accent="green">
+              <div class="card-icon"><i class="fas fa-users"></i></div>
+              <div class="card-info">
+                <span class="card-value">{{ total_customers if total_customers is defined else 156 }}</span>
+                <span class="card-label">Total Customers</span>
+              </div>
+            </div>
+            <div class="summary-card" data-accent="purple">
+              <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+              <div class="card-info">
+                <span class="card-value">{{ total_orders if total_orders is defined else 89 }}</span>
+                <span class="card-label">Total Orders</span>
+              </div>
+            </div>
+            <div class="summary-card" data-accent="orange">
+              <div class="card-icon"><i class="fas fa-clock"></i></div>
+              <div class="card-info">
+                <span class="card-value">{{ pending_orders if pending_orders is defined else 12 }}</span>
+                <span class="card-label">Pending Orders</span>
+              </div>
+            </div>
+            <div class="summary-card" data-accent="teal">
+              <div class="card-icon"><i class="fas fa-truck"></i></div>
+              <div class="card-info">
+                <span class="card-value">{{ shipped_orders if shipped_orders is defined else 67 }}</span>
+                <span class="card-label">Delivered Orders</span>
+              </div>
+            </div>
+            <div class="summary-card" data-accent="red">
+              <div class="card-icon"><i class="fas fa-exclamation-circle"></i></div>
+              <div class="card-info">
+                <span class="card-value">{{ low_stock_products|length if low_stock_products is defined else 5 }}</span>
+                <span class="card-label">Low Stock Products</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent Orders + Quick Actions Row -->
+          <div class="content-row">
+            <!-- Recent Orders Table -->
+            <section class="panel panel-wide">
+              <div class="panel-header">
+                <h3><i class="fas fa-receipt"></i> Recent Orders</h3>
+                <a href="{{ url_for('admin.orders') }}" class="panel-link">View All <i class="fas fa-arrow-right"></i></a>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Products</th>
+                      <th>Amount</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="td-id">#ORD-1042</td>
+                      <td>
+                        <div class="customer-cell">
+                          <div class="customer-avatar blue">PG</div>
+                          <span>Pughal</span>
+                        </div>
+                      </td>
+                      <td>Mechanical Seal Kit</td>
+                      <td class="td-amount">₹2,450</td>
+                      <td>Jul 18, 2026</td>
+                      <td><span class="status-badge pending">Pending</span></td>
+                    </tr>
+                    <tr>
+                      <td class="td-id">#ORD-1041</td>
+                      <td>
+                        <div class="customer-cell">
+                          <div class="customer-avatar green">GU</div>
+                          <span>Guhan</span>
+                        </div>
+                      </td>
+                      <td>Impeller X200, Bearing Set</td>
+                      <td class="td-amount">₹5,890</td>
+                      <td>Jul 17, 2026</td>
+                      <td><span class="status-badge processing">Processing</span></td>
+                    </tr>
+                    <tr>
+                      <td class="td-id">#ORD-1040</td>
+                      <td>
+                        <div class="customer-cell">
+                          <div class="customer-avatar orange">PT</div>
+                          <span>Peter</span>
+                        </div>
+                      </td>
+                      <td>Pump Shaft A10</td>
+                      <td class="td-amount">₹3,200</td>
+                      <td>Jul 16, 2026</td>
+                      <td><span class="status-badge shipped">Shipped</span></td>
+                    </tr>
+                    <tr>
+                      <td class="td-id">#ORD-1039</td>
+                      <td>
+                        <div class="customer-cell">
+                          <div class="customer-avatar purple">KR</div>
+                          <span>Kumar</span>
+                        </div>
+                      </td>
+                      <td>Gasket Set Premium</td>
+                      <td class="td-amount">₹1,150</td>
+                      <td>Jul 15, 2026</td>
+                      <td><span class="status-badge delivered">Delivered</span></td>
+                    </tr>
+                    <tr>
+                      <td class="td-id">#ORD-1038</td>
+                      <td>
+                        <div class="customer-cell">
+                          <div class="customer-avatar teal">AN</div>
+                          <span>Anitha</span>
+                        </div>
+                      </td>
+                      <td>Coupling Assembly</td>
+                      <td class="td-amount">₹4,600</td>
+                      <td>Jul 14, 2026</td>
+                      <td><span class="status-badge delivered">Delivered</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="panel panel-narrow">
+              <div class="panel-header">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+              </div>
+              <div class="quick-actions">
+                <a href="{{ url_for('admin.add_product') }}" class="action-card">
+                  <div class="action-icon blue"><i class="fas fa-plus-circle"></i></div>
+                  <span>Add Product</span>
+                </a>
+                <a href="{{ url_for('admin.orders') }}" class="action-card">
+                  <div class="action-icon orange"><i class="fas fa-clipboard-list"></i></div>
+                  <span>View Orders</span>
+                </a>
+                <a href="{{ url_for('admin.stock') }}" class="action-card">
+                  <div class="action-icon green"><i class="fas fa-boxes"></i></div>
+                  <span>Manage Stock</span>
+                </a>
+                <a href="{{ url_for('admin.categories') }}" class="action-card">
+                  <div class="action-icon purple"><i class="fas fa-folder-plus"></i></div>
+                  <span>Add Category</span>
+                </a>
+                <a href="{{ url_for('admin.service_reminders') }}" class="action-card">
+                  <div class="action-icon red"><i class="fas fa-calendar-plus"></i></div>
+                  <span>Set Reminder</span>
+                </a>
+                <a href="{{ url_for('customer.index') }}" target="_blank" class="action-card">
+                  <div class="action-icon teal"><i class="fas fa-store"></i></div>
+                  <span>View Store</span>
+                </a>
+              </div>
+            </section>
+          </div>
+
+          <!-- Low Stock + Inventory Summary Row -->
+          <div class="content-row">
+            <!-- Low Stock Products Table -->
+            <section class="panel panel-wide">
+              <div class="panel-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Low Stock Products</h3>
+                <a href="{{ url_for('admin.stock') }}" class="panel-link">Manage Stock <i class="fas fa-arrow-right"></i></a>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Stock</th>
+                      <th>Reorder Level</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="product-cell">
+                          <div class="product-thumb orange"><i class="fas fa-cog"></i></div>
+                          <div>
+                            <span class="product-name">Impeller X200</span>
+                            <span class="product-sku">SKU: IMP-X200</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>Pump Impellers</td>
+                      <td><span class="stock-value critical">3</span></td>
+                      <td>10</td>
+                      <td><span class="stock-status critical">Critical</span></td>
+                      <td><button class="btn-sm btn-blue">Restock</button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="product-cell">
+                          <div class="product-thumb blue"><i class="fas fa-circle"></i></div>
+                          <div>
+                            <span class="product-name">Mechanical Seal 50mm</span>
+                            <span class="product-sku">SKU: MS-50</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>Mechanical Seals</td>
+                      <td><span class="stock-value warning">5</span></td>
+                      <td>15</td>
+                      <td><span class="stock-status warning">Low</span></td>
+                      <td><button class="btn-sm btn-blue">Restock</button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="product-cell">
+                          <div class="product-thumb green"><i class="fas fa-circle"></i></div>
+                          <div>
+                            <span class="product-name">Bearing 6205-2RS</span>
+                            <span class="product-sku">SKU: BRG-6205</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>Bearings</td>
+                      <td><span class="stock-value warning">7</span></td>
+                      <td>20</td>
+                      <td><span class="stock-status warning">Low</span></td>
+                      <td><button class="btn-sm btn-blue">Restock</button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="product-cell">
+                          <div class="product-thumb purple"><i class="fas fa-circle"></i></div>
+                          <div>
+                            <span class="product-name">Pump Shaft A10</span>
+                            <span class="product-sku">SKU: SHA-A10</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>Pump Shafts</td>
+                      <td><span class="stock-value critical">2</span></td>
+                      <td>8</td>
+                      <td><span class="stock-status critical">Critical</span></td>
+                      <td><button class="btn-sm btn-blue">Restock</button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="product-cell">
+                          <div class="product-thumb red"><i class="fas fa-circle"></i></div>
+                          <div>
+                            <span class="product-name">Oil Seal 35x50x8</span>
+                            <span class="product-sku">SKU: OS-3550</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>Oil Seals</td>
+                      <td><span class="stock-value warning">4</span></td>
+                      <td>12</td>
+                      <td><span class="stock-status warning">Low</span></td>
+                      <td><button class="btn-sm btn-blue">Restock</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Inventory Summary -->
+            <section class="panel panel-narrow">
+              <div class="panel-header">
+                <h3><i class="fas fa-chart-pie"></i> Inventory Summary</h3>
+              </div>
+              <div class="inventory-summary">
+                <div class="inv-chart">
+                  <svg class="donut-chart" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#E2E8F0" stroke-width="12"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1565C0" stroke-width="12" stroke-dasharray="188 126" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#16A34A" stroke-width="12" stroke-dasharray="63 251" stroke-dashoffset="-188" transform="rotate(-90 60 60)"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#F59E0B" stroke-width="12" stroke-dasharray="47 267" stroke-dashoffset="-251" transform="rotate(-90 60 60)"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#DC2626" stroke-width="12" stroke-dasharray="16 298" stroke-dashoffset="-298" transform="rotate(-90 60 60)"/>
+                    <text x="60" y="56" text-anchor="middle" font-size="18" font-weight="700" fill="#1E293B">24</text>
+                    <text x="60" y="72" text-anchor="middle" font-size="9" fill="#64748B">Products</text>
+                  </svg>
+                </div>
+                <div class="inv-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background:#1565C0"></span>
+                    <span class="legend-label">In Stock</span>
+                    <span class="legend-value">60%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background:#16A34A"></span>
+                    <span class="legend-label">Good</span>
+                    <span class="legend-value">20%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background:#F59E0B"></span>
+                    <span class="legend-label">Low</span>
+                    <span class="legend-value">15%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background:#DC2626"></span>
+                    <span class="legend-label">Critical</span>
+                    <span class="legend-value">5%</span>
+                  </div>
+                </div>
+                <div class="inv-stats">
+                  <div class="inv-stat">
+                    <span class="inv-stat-value">₹{{ total_revenue if total_revenue is defined else '2,45,000' }}</span>
+                    <span class="inv-stat-label">Total Revenue</span>
+                  </div>
+                  <div class="inv-stat">
+                    <span class="inv-stat-value">{{ processing_orders if processing_orders is defined else 10 }}</span>
+                    <span class="inv-stat-label">Processing</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
+</body>
+</html>

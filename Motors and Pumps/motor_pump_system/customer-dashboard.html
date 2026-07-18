@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard — Spare Parts Ordering System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="static/css/dashboard.css">
+</head>
+<body>
+
+    <!-- ==================== NAVIGATION BAR ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <!-- Left: Logo + Project Name -->
+            <div class="nav-left">
+                <a href="#" class="nav-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">MotoParts</span>
+                        <span class="brand-sub">Spare Parts Ordering System</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Center: Menu Links -->
+            <div class="nav-center" id="navMenu">
+                <ul class="nav-links">
+                    <li>
+                        <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#products" class="nav-link" data-section="products">
+                            <i class="fas fa-box"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#categories" class="nav-link" data-section="categories">
+                            <i class="fas fa-tags"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#my-orders" class="nav-link" data-section="my-orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#contact" class="nav-link" data-section="contact">
+                            <i class="fas fa-envelope"></i>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right: Search + Notification + Cart + Profile + Logout -->
+            <div class="nav-right">
+                <!-- Search -->
+                <div class="nav-search" id="navSearch">
+                    <button class="nav-icon-btn" id="searchToggle" aria-label="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div class="search-overlay" id="searchOverlay">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="globalSearch" placeholder="Search parts, orders, categories..." autocomplete="off">
+                            <kbd>ESC</kbd>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="nav-notifications" id="navNotifications">
+                    <button class="nav-icon-btn" id="notificationToggle" aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">3</span>
+                    </button>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notif-header">
+                            <h4>Notifications</h4>
+                            <button class="notif-clear" id="clearNotifications">Mark all read</button>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <div class="notif-item unread">
+                                <div class="notif-icon gold"><i class="fas fa-check-circle"></i></div>
+                                <div class="notif-content">
+                                    <p>Order <strong>#ORD-1024</strong> has been shipped</p>
+                                    <span class="notif-time">2 hours ago</span>
+                                </div>
+                            </div>
+                            <div class="notif-item unread">
+                                <div class="notif-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="notif-content">
+                                    <p>Service reminder: <strong>Water Pump WP-220</strong> maintenance due</p>
+                                    <span class="notif-time">1 day ago</span>
+                                </div>
+                            </div>
+                            <div class="notif-item unread">
+                                <div class="notif-icon green"><i class="fas fa-box"></i></div>
+                                <div class="notif-content">
+                                    <p>New product <strong>Bearing 6205-2RS</strong> is now in stock</p>
+                                    <span class="notif-time">3 days ago</span>
+                                </div>
+                            </div>
+                            <div class="notif-item">
+                                <div class="notif-icon blue"><i class="fas fa-tag"></i></div>
+                                <div class="notif-content">
+                                    <p>Flash sale: <strong>15% off</strong> on all motor couplings</p>
+                                    <span class="notif-time">5 days ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notif-footer">
+                            <a href="#">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart -->
+                <div class="nav-cart" id="navCart">
+                    <a href="#" class="nav-icon-btn" id="cartToggle" aria-label="Shopping Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count-badge" id="cartCountBadge">5</span>
+                    </a>
+                    <div class="cart-dropdown" id="cartDropdown">
+                        <div class="cart-header">
+                            <h4>Shopping Cart</h4>
+                            <span class="cart-item-count">5 items</span>
+                        </div>
+                        <div class="cart-list">
+                            <div class="cart-item">
+                                <div class="cart-item-img"><i class="fas fa-cog"></i></div>
+                                <div class="cart-item-details">
+                                    <p class="cart-item-name">Bearing 6205-2RS</p>
+                                    <span class="cart-item-qty">Qty: 2</span>
+                                </div>
+                                <span class="cart-item-price">₹1,360</span>
+                                <button class="cart-item-remove" title="Remove"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="cart-item">
+                                <div class="cart-item-img"><i class="fas fa-compress-alt"></i></div>
+                                <div class="cart-item-details">
+                                    <p class="cart-item-name">Oil Seal 30x42x7</p>
+                                    <span class="cart-item-qty">Qty: 4</span>
+                                </div>
+                                <span class="cart-item-price">₹720</span>
+                                <button class="cart-item-remove" title="Remove"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="cart-item">
+                                <div class="cart-item-img"><i class="fas fa-link"></i></div>
+                                <div class="cart-item-details">
+                                    <p class="cart-item-name">Motor Coupling MC-3</p>
+                                    <span class="cart-item-qty">Qty: 1</span>
+                                </div>
+                                <span class="cart-item-price">₹3,450</span>
+                                <button class="cart-item-remove" title="Remove"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="cart-footer">
+                            <div class="cart-total">
+                                <span>Total</span>
+                                <strong>₹5,530.00</strong>
+                            </div>
+                            <a href="#" class="btn btn-primary btn-block btn-sm">View Cart & Checkout</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-divider"></div>
+
+                <!-- Profile -->
+                <div class="nav-profile" id="navProfile">
+                    <button class="profile-btn" id="profileToggle">
+                        <div class="profile-avatar">RK</div>
+                        <div class="profile-info">
+                            <span class="profile-name">Ravi Kumar</span>
+                            <span class="profile-role">Customer</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar">RK</div>
+                            <div>
+                                <strong>Ravi Kumar</strong>
+                                <span>ravi.kumar@email.com</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#" class="dropdown-item"><i class="fas fa-shopping-bag"></i> Order History</a>
+                        <a href="#" class="dropdown-item"><i class="fas fa-headset"></i> Support</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+
+                <!-- Logout Button -->
+                <a href="#" class="nav-logout-btn" id="navLogoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-logout-text">Logout</span>
+                </a>
+
+                <!-- Mobile Toggle -->
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ==================== WELCOME BANNER ==================== -->
+        <section class="welcome-banner" id="dashboard">
+            <div class="welcome-inner">
+                <div class="welcome-left">
+                    <span class="welcome-tag"><i class="fas fa-bolt"></i> Dashboard</span>
+                    <h1>Welcome Back, <span class="welcome-highlight">Customer!</span></h1>
+                    <div class="welcome-datetime">
+                        <div class="welcome-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span id="currentDate"></span>
+                        </div>
+                        <div class="welcome-time">
+                            <i class="fas fa-clock"></i>
+                            <span id="currentTime"></span>
+                        </div>
+                    </div>
+                    <p class="welcome-desc">Find genuine motor and pump spare parts quickly and manage your orders efficiently.</p>
+                    <div class="welcome-actions">
+                        <a href="#products" class="btn btn-primary btn-lg">
+                            <i class="fas fa-box"></i> Browse Products
+                        </a>
+                        <a href="#my-orders" class="btn btn-outline btn-lg">
+                            <i class="fas fa-shopping-bag"></i> View My Orders
+                        </a>
+                    </div>
+                </div>
+                <div class="welcome-right">
+                    <div class="welcome-illustration">
+                        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="welcome-svg">
+                            <circle cx="200" cy="150" r="120" fill="#E3F2FD" opacity="0.6"/>
+                            <g transform="translate(160,110)">
+                                <path d="M40 0 L44 12 L56 8 L52 20 L64 24 L56 32 L60 44 L48 40 L44 52 L40 40 L36 52 L32 40 L20 44 L24 32 L16 24 L28 20 L24 8 L36 12 Z" fill="#1565C0" opacity="0.15"/>
+                                <circle cx="40" cy="26" r="14" fill="none" stroke="#1565C0" stroke-width="3" opacity="0.3"/>
+                                <circle cx="40" cy="26" r="6" fill="#1565C0" opacity="0.2"/>
+                            </g>
+                            <g transform="translate(220,140)">
+                                <path d="M30 0 L33 9 L42 6 L39 15 L48 18 L42 24 L45 33 L36 30 L33 39 L30 30 L27 39 L24 30 L15 33 L18 24 L12 18 L21 15 L18 6 L27 9 Z" fill="#1565C0" opacity="0.25"/>
+                                <circle cx="30" cy="19.5" r="10" fill="none" stroke="#1565C0" stroke-width="2.5" opacity="0.4"/>
+                                <circle cx="30" cy="19.5" r="4" fill="#1565C0" opacity="0.3"/>
+                            </g>
+                            <rect x="140" y="170" width="120" height="50" rx="10" fill="#1565C0" opacity="0.12"/>
+                            <rect x="150" y="178" width="100" height="34" rx="6" fill="#1565C0" opacity="0.08"/>
+                            <path d="M260 185 L290 185 L290 205 L280 205" stroke="#1565C0" stroke-width="4" stroke-linecap="round" opacity="0.2" fill="none"/>
+                            <circle cx="288" cy="215" r="3" fill="#1E88E5" opacity="0.4"/>
+                            <circle cx="283" cy="225" r="2" fill="#1E88E5" opacity="0.3"/>
+                            <circle cx="292" cy="230" r="2.5" fill="#1E88E5" opacity="0.35"/>
+                            <rect x="100" y="185" width="45" height="16" rx="4" fill="#1565C0" opacity="0.1"/>
+                            <circle cx="108" cy="193" r="3" fill="#1565C0" opacity="0.2"/>
+                            <circle cx="252" cy="193" r="3" fill="#1565C0" opacity="0.2"/>
+                            <rect x="130" y="218" width="140" height="8" rx="4" fill="#1565C0" opacity="0.15"/>
+                            <circle cx="100" cy="120" r="2" fill="#1565C0" opacity="0.15"/>
+                            <circle cx="310" cy="100" r="2" fill="#1565C0" opacity="0.15"/>
+                            <circle cx="90" cy="200" r="1.5" fill="#1565C0" opacity="0.1"/>
+                            <circle cx="320" cy="180" r="1.5" fill="#1565C0" opacity="0.1"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== STATISTICS CARDS ==================== -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card" data-accent="blue">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" data-count="12">0</span>
+                        <span class="stat-label">Total Orders</span>
+                        <span class="stat-desc">Orders placed</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" data-accent="orange">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" data-count="3">0</span>
+                        <span class="stat-label">Pending Orders</span>
+                        <span class="stat-desc">Waiting for processing</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" data-accent="green">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" data-count="9">0</span>
+                        <span class="stat-label">Delivered Orders</span>
+                        <span class="stat-desc">Successfully delivered</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" data-accent="purple">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" data-count="5">0</span>
+                        <span class="stat-label">Cart Items</span>
+                        <span class="stat-desc">Ready for checkout</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SEARCH SECTION ==================== -->
+        <section class="search-section" id="products">
+            <div class="search-bar-wrapper">
+                <div class="search-bar">
+                    <div class="search-bar-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <input type="text" class="search-input" id="dashSearchInput" placeholder="Search by Part Name, Brand, Category or Part Number" autocomplete="off">
+                    <div class="search-bar-divider"></div>
+                    <button class="search-btn-primary" id="dashSearchBtn">
+                        <i class="fas fa-search"></i>
+                        <span>Search</span>
+                    </button>
+                    <button class="search-btn-filter" id="dashFilterBtn">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Filter</span>
+                    </button>
+                </div>
+                <div class="search-tags">
+                    <span class="search-tag-label">Popular:</span>
+                    <button class="search-tag" data-tag="Impeller">Impeller</button>
+                    <button class="search-tag" data-tag="Mechanical Seal">Mechanical Seal</button>
+                    <button class="search-tag" data-tag="Bearing">Bearing</button>
+                    <button class="search-tag" data-tag="Gasket">Gasket</button>
+                    <button class="search-tag" data-tag="Coupling">Coupling</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== QUICK ACTIONS ==================== -->
+        <section class="quick-actions-section">
+            <div class="actions-grid">
+                <a href="#products" class="action-card">
+                    <div class="action-icon blue"><i class="fas fa-box"></i></div>
+                    <span>Browse Products</span>
+                </a>
+                <a href="#" class="action-card">
+                    <div class="action-icon green"><i class="fas fa-shopping-cart"></i></div>
+                    <span>View Cart</span>
+                </a>
+                <a href="#my-orders" class="action-card">
+                    <div class="action-icon orange"><i class="fas fa-truck"></i></div>
+                    <span>Track Orders</span>
+                </a>
+                <a href="#" class="action-card">
+                    <div class="action-icon purple"><i class="fas fa-user-edit"></i></div>
+                    <span>Update Profile</span>
+                </a>
+                <a href="#contact" class="action-card">
+                    <div class="action-icon teal"><i class="fas fa-headset"></i></div>
+                    <span>Contact Support</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ==================== MAIN GRID: ORDERS + SIDEBAR ==================== -->
+        <div class="content-grid">
+
+            <!-- Left Column: Recent Orders -->
+            <div class="content-main" id="my-orders">
+
+                <!-- Recent Orders Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h3>Recent Orders</h3>
+                        </div>
+                        <div class="panel-actions">
+                            <div class="filter-group">
+                                <select id="orderFilter" class="select-input">
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
+                                </select>
+                            </div>
+                            <a href="#" class="btn btn-outline btn-sm">View All</a>
+                        </div>
+                    </div>
+                    <div class="panel-body panel-body-table">
+                        <div class="table-wrapper">
+                            <table class="orders-table" id="ordersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Product</th>
+                                        <th>Order Date</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-status="shipped">
+                                        <td><span class="order-id">#ORD-1024</span></td>
+                                        <td>
+                                            <div class="product-cell">
+                                                <div class="product-thumb"><i class="fas fa-circle-notch"></i></div>
+                                                <div class="product-cell-info">
+                                                    <span class="product-cell-name">Bearing 6205-2RS x2, Oil Seal x4</span>
+                                                    <span class="product-cell-sub">3 items</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="date-cell"><i class="far fa-calendar-alt"></i> 12 Jul 2026</span></td>
+                                        <td><span class="amount">₹4,680.00</span></td>
+                                        <td><span class="status-badge status-shipped"><span class="status-dot"></span> Shipped</span></td>
+                                    </tr>
+                                    <tr data-status="processing">
+                                        <td><span class="order-id">#ORD-1023</span></td>
+                                        <td>
+                                            <div class="product-cell">
+                                                <div class="product-thumb orange"><i class="fas fa-fan"></i></div>
+                                                <div class="product-cell-info">
+                                                    <span class="product-cell-name">Impeller Kit IP-50</span>
+                                                    <span class="product-cell-sub">1 item</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="date-cell"><i class="far fa-calendar-alt"></i> 08 Jul 2026</span></td>
+                                        <td><span class="amount">₹12,450.00</span></td>
+                                        <td><span class="status-badge status-processing"><span class="status-dot"></span> Processing</span></td>
+                                    </tr>
+                                    <tr data-status="delivered">
+                                        <td><span class="order-id">#ORD-1022</span></td>
+                                        <td>
+                                            <div class="product-cell">
+                                                <div class="product-thumb green"><i class="fas fa-link"></i></div>
+                                                <div class="product-cell-info">
+                                                    <span class="product-cell-name">Motor Coupling MC-3 x1, Gasket Set x2</span>
+                                                    <span class="product-cell-sub">2 items</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="date-cell"><i class="far fa-calendar-alt"></i> 01 Jul 2026</span></td>
+                                        <td><span class="amount">₹8,920.00</span></td>
+                                        <td><span class="status-badge status-delivered"><span class="status-dot"></span> Delivered</span></td>
+                                    </tr>
+                                    <tr data-status="delivered">
+                                        <td><span class="order-id">#ORD-1021</span></td>
+                                        <td>
+                                            <div class="product-cell">
+                                                <div class="product-thumb purple"><i class="fas fa-compress-alt"></i></div>
+                                                <div class="product-cell-info">
+                                                    <span class="product-cell-name">Mechanical Seal MS-100</span>
+                                                    <span class="product-cell-sub">1 item</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="date-cell"><i class="far fa-calendar-alt"></i> 25 Jun 2026</span></td>
+                                        <td><span class="amount">₹6,340.00</span></td>
+                                        <td><span class="status-badge status-delivered"><span class="status-dot"></span> Delivered</span></td>
+                                    </tr>
+                                    <tr data-status="pending">
+                                        <td><span class="order-id">#ORD-1020</span></td>
+                                        <td>
+                                            <div class="product-cell">
+                                                <div class="product-thumb red"><i class="fas fa-grip-lines-vertical"></i></div>
+                                                <div class="product-cell-info">
+                                                    <span class="product-cell-name">Pump Shaft PS-22 x1, Bearing 6308 x2</span>
+                                                    <span class="product-cell-sub">2 items</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="date-cell"><i class="far fa-calendar-alt"></i> 20 Jun 2026</span></td>
+                                        <td><span class="amount">₹15,200.00</span></td>
+                                        <td><span class="status-badge status-pending"><span class="status-dot"></span> Pending</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Equipment / My Motors -->
+                <div class="panel" id="equipment-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-cog"></i>
+                            <h3>Active Equipment</h3>
+                        </div>
+                        <a href="#" class="btn btn-outline btn-sm">View All</a>
+                    </div>
+                    <div class="panel-body">
+                        <div class="equipment-grid">
+                            <div class="equipment-card">
+                                <div class="equipment-img">
+                                    <i class="fas fa-water"></i>
+                                </div>
+                                <div class="equipment-info">
+                                    <h4>Water Pump WP-220</h4>
+                                    <p class="equipment-serial">SN: WP-2026-0847</p>
+                                    <div class="equipment-meta">
+                                        <span class="meta-item"><i class="fas fa-calendar"></i> Purchased: 15 Mar 2026</span>
+                                        <span class="meta-item"><i class="fas fa-tools"></i> Last Service: 10 Jun 2026</span>
+                                    </div>
+                                    <div class="equipment-service">
+                                        <div class="service-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 65%"></div>
+                                            </div>
+                                            <span class="service-label next-service">
+                                                <i class="fas fa-clock"></i> Next Service: 10 Sep 2026
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="equipment-status active">
+                                    <span class="status-dot"></span> Active
+                                </div>
+                            </div>
+
+                            <div class="equipment-card">
+                                <div class="equipment-img">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <div class="equipment-info">
+                                    <h4>Centrifugal Pump CP-500</h4>
+                                    <p class="equipment-serial">SN: CP-2025-1203</p>
+                                    <div class="equipment-meta">
+                                        <span class="meta-item"><i class="fas fa-calendar"></i> Purchased: 08 Nov 2025</span>
+                                        <span class="meta-item"><i class="fas fa-tools"></i> Last Service: 05 May 2026</span>
+                                    </div>
+                                    <div class="equipment-service">
+                                        <div class="service-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill urgent" style="width: 90%"></div>
+                                            </div>
+                                            <span class="service-label urgent-service">
+                                                <i class="fas fa-exclamation-triangle"></i> Service Due: 05 Aug 2026
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="equipment-status urgent">
+                                    <span class="status-dot"></span> Service Due
+                                </div>
+                            </div>
+
+                            <div class="equipment-card">
+                                <div class="equipment-img">
+                                    <i class="fas fa-industry"></i>
+                                </div>
+                                <div class="equipment-info">
+                                    <h4>Industrial Motor IM-750</h4>
+                                    <p class="equipment-serial">SN: IM-2026-0312</p>
+                                    <div class="equipment-meta">
+                                        <span class="meta-item"><i class="fas fa-calendar"></i> Purchased: 20 Jan 2026</span>
+                                        <span class="meta-item"><i class="fas fa-tools"></i> Last Service: 20 Apr 2026</span>
+                                    </div>
+                                    <div class="equipment-service">
+                                        <div class="service-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill warning" style="width: 78%"></div>
+                                            </div>
+                                            <span class="service-label warning-service">
+                                                <i class="fas fa-exclamation-circle"></i> Service Due: 20 Jul 2026
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="equipment-status warning">
+                                    <span class="status-dot"></span> Due Soon
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <aside class="content-sidebar">
+
+                <!-- Customer Profile Summary -->
+                <div class="panel sidebar-panel profile-panel">
+                    <div class="profile-panel-cover"></div>
+                    <div class="profile-panel-body">
+                        <div class="profile-panel-avatar">
+                            <img src="https://placehold.co/96x96/E3F2FD/1565C0?text=RK" alt="Ravi Kumar">
+                            <span class="profile-status-dot"></span>
+                        </div>
+                        <h3 class="profile-panel-name">Ravi Kumar</h3>
+                        <span class="profile-panel-role">Premium Customer</span>
+                        <div class="profile-panel-details">
+                            <div class="profile-detail-row">
+                                <i class="fas fa-envelope"></i>
+                                <span>ravi.kumar@gmail.com</span>
+                            </div>
+                            <div class="profile-detail-row">
+                                <i class="fas fa-phone"></i>
+                                <span>+91 98765 43210</span>
+                            </div>
+                            <div class="profile-detail-row">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>12, Industrial Area, Coimbatore, Tamil Nadu</span>
+                            </div>
+                        </div>
+                        <div class="profile-panel-actions">
+                            <button class="profile-btn-edit"><i class="fas fa-pen"></i> Edit Profile</button>
+                            <button class="profile-btn-view"><i class="fas fa-user"></i> View Profile</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Reminders -->
+                <div class="panel sidebar-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-bell"></i>
+                            <h3>Service Reminders</h3>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="reminder-list">
+                            <div class="reminder-item urgent">
+                                <div class="reminder-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="reminder-info">
+                                    <h5>Centrifugal Pump CP-500</h5>
+                                    <p>Full maintenance + seal replacement</p>
+                                    <span class="reminder-date overdue">Overdue by 5 days</span>
+                                </div>
+                            </div>
+                            <div class="reminder-item warning">
+                                <div class="reminder-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="reminder-info">
+                                    <h5>Industrial Motor IM-750</h5>
+                                    <p>Bearing inspection + lubrication</p>
+                                    <span class="reminder-date">Due in 5 days</span>
+                                </div>
+                            </div>
+                            <div class="reminder-item info">
+                                <div class="reminder-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="reminder-info">
+                                    <h5>Water Pump WP-220</h5>
+                                    <p>Routine inspection + filter change</p>
+                                    <span class="reminder-date">Due in 57 days</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline btn-block btn-sm" style="margin-top: 12px;">View All Reminders</a>
+                    </div>
+                </div>
+
+                <!-- Contact / Support Panel -->
+                <div class="panel sidebar-panel" id="contact">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-headset"></i>
+                            <h3>Need Help?</h3>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="support-options">
+                            <a href="#" class="support-card">
+                                <i class="fas fa-phone-alt"></i>
+                                <div>
+                                    <strong>Call Us</strong>
+                                    <span>+91 1800-123-4567</span>
+                                </div>
+                            </a>
+                            <a href="#" class="support-card">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email Support</strong>
+                                    <span>support@motoparts.in</span>
+                                </div>
+                            </a>
+                            <a href="#" class="support-card">
+                                <i class="fas fa-comments"></i>
+                                <div>
+                                    <strong>Live Chat</strong>
+                                    <span>Available 9AM - 6PM IST</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+
+        <!-- ==================== CATEGORIES ==================== -->
+        <section class="categories-section" id="categories">
+            <div class="section-header">
+                <h2><i class="fas fa-th-large"></i> Shop by Category</h2>
+                <p>Browse our wide range of motor and pump spare parts</p>
+            </div>
+            <div class="categories-grid">
+                <a href="#" class="category-card" data-color="blue">
+                    <div class="category-card-icon"><i class="fas fa-circle-notch"></i></div>
+                    <h4>Bearings</h4>
+                    <p>Precision bearings for smooth rotation</p>
+                </a>
+                <a href="#" class="category-card" data-color="teal">
+                    <div class="category-card-icon"><i class="fas fa-compress-alt"></i></div>
+                    <h4>Mechanical Seals</h4>
+                    <p>Reliable sealing solutions</p>
+                </a>
+                <a href="#" class="category-card" data-color="orange">
+                    <div class="category-card-icon"><i class="fas fa-fan"></i></div>
+                    <h4>Pump Impellers</h4>
+                    <p>High-efficiency flow components</p>
+                </a>
+                <a href="#" class="category-card" data-color="purple">
+                    <div class="category-card-icon"><i class="fas fa-grip-lines-vertical"></i></div>
+                    <h4>Pump Shafts</h4>
+                    <p>Durable shafts for power transfer</p>
+                </a>
+                <a href="#" class="category-card" data-color="yellow">
+                    <div class="category-card-icon"><i class="fas fa-bolt"></i></div>
+                    <h4>Capacitors</h4>
+                    <p>Motor start and run capacitors</p>
+                </a>
+                <a href="#" class="category-card" data-color="green">
+                    <div class="category-card-icon"><i class="fas fa-link"></i></div>
+                    <h4>Couplings</h4>
+                    <p>Flexible and rigid couplings</p>
+                </a>
+                <a href="#" class="category-card" data-color="red">
+                    <div class="category-card-icon"><i class="fas fa-wind"></i></div>
+                    <h4>Fan Blades</h4>
+                    <p>Cooling fan blades for motors</p>
+                </a>
+                <a href="#" class="category-card" data-color="indigo">
+                    <div class="category-card-icon"><i class="fas fa-tint"></i></div>
+                    <h4>Oil Seals</h4>
+                    <p>Leak-proof oil retention seals</p>
+                </a>
+                <a href="#" class="category-card" data-color="pink">
+                    <div class="category-card-icon"><i class="fas fa-layer-group"></i></div>
+                    <h4>Gaskets</h4>
+                    <p>High-temp gaskets andaskets</p>
+                </a>
+                <a href="#" class="category-card" data-color="slate">
+                    <div class="category-card-icon"><i class="fas fa-toolbox"></i></div>
+                    <h4>Accessories</h4>
+                    <p>Tools and fitting accessories</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- ==================== FEATURED PRODUCTS ==================== -->
+        <section class="featured-section" id="featured-products">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> Featured Products</h2>
+                <p>Top-selling motor and pump spare parts</p>
+            </div>
+            <div class="products-grid">
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/E3F2FD/1565C0?text=Impeller" alt="SS Impeller">
+                        <span class="product-badge badge-new">New</span>
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Pump Impellers</span>
+                        <h4 class="product-name">SS 316 Impeller - Centrifugal Pump</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> Grundfos</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                <span>4.5</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 24 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;3,450</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/E8F5E9/2E7D32?text=Seal" alt="Mechanical Seal">
+                        <span class="product-badge badge-hot">Hot</span>
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Mechanical Seals</span>
+                        <h4 class="product-name">Cartridge Mechanical Seal - Type A</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> Flowserve</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <span>5.0</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 18 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;5,200</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/F3E5F5/7B1FA2?text=Bearing" alt="Ball Bearing">
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Bearings</span>
+                        <h4 class="product-name">Deep Groove Ball Bearing 6205</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> SKF</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                <span>4.0</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 56 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;890</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/FFF3E0/EF6C00?text=Shaft" alt="Pump Shaft">
+                        <span class="product-badge badge-sale">-15%</span>
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Pump Shafts</span>
+                        <h4 class="product-name">EN8 Pump Shaft - 20mm x 300mm</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> Kirloskar</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                <span>4.5</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 12 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;1,275</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/E3F2FD/1565C0?text=Capacitor" alt="Run Capacitor">
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Capacitors</span>
+                        <h4 class="product-name">Motor Run Capacitor 50 MFD</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> Havells</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                <span>4.0</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 40 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;340</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/E8F5E9/2E7D32?text=Coupling" alt="Coupling">
+                        <span class="product-badge badge-new">New</span>
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Couplings</span>
+                        <h4 class="product-name">Flexible Jaw Coupling - 28mm</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> Rexnord</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <span>5.0</span>
+                            </div>
+                            <span class="product-stock low-stock"><i class="fas fa-exclamation-circle"></i> 4 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;2,100</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/FFEBEE/C62828?text=Gasket" alt="Gasket Kit">
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Gaskets</span>
+                        <h4 class="product-name">Pump Gasket Kit - Complete Set</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> Garlock</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                <span>4.5</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 30 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;1,650</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="https://placehold.co/320x220/ECEFF1/546E7A?text=Oil+Seal" alt="Oil Seal">
+                        <span class="product-badge badge-hot">Hot</span>
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">Oil Seals</span>
+                        <h4 class="product-name">TC Oil Seal 35x50x7 - NBR</h4>
+                        <span class="product-brand"><i class="fas fa-industry"></i> NOK</span>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                <span>4.0</span>
+                            </div>
+                            <span class="product-stock in-stock"><i class="fas fa-check-circle"></i> 85 in stock</span>
+                        </div>
+                        <div class="product-price-row">
+                            <span class="product-price">&#8377;180</span>
+                            <div class="product-actions">
+                                <button class="btn-view">Details</button>
+                                <button class="btn-cart"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-grid">
+                    <div class="footer-about">
+                        <div class="footer-logo">
+                            <i class="fas fa-cogs"></i>
+                            <span>MotoParts</span>
+                        </div>
+                        <p>Your trusted source for genuine motor and pump spare parts. Quality components for industrial maintenance and repair.</p>
+                        <div class="footer-social">
+                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-links">
+                        <h5>Quick Links</h5>
+                        <ul>
+                            <li><a href="#dashboard"><i class="fas fa-chevron-right"></i> Dashboard</a></li>
+                            <li><a href="#products"><i class="fas fa-chevron-right"></i> Products</a></li>
+                            <li><a href="#my-orders"><i class="fas fa-chevron-right"></i> My Orders</a></li>
+                            <li><a href="#categories"><i class="fas fa-chevron-right"></i> Categories</a></li>
+                            <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h5>Categories</h5>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-chevron-right"></i> Bearings</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right"></i> Mechanical Seals</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right"></i> Pump Impellers</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right"></i> Couplings</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right"></i> Gaskets</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-contact">
+                        <h5>Contact Information</h5>
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <span class="contact-label">Email</span>
+                                <a href="mailto:support@motoparts.in">support@motoparts.in</a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                            <div>
+                                <span class="contact-label">Phone</span>
+                                <a href="tel:+919876543210">+91 98765 43210</a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <span class="contact-label">Address</span>
+                                <span>12, Industrial Area,<br>Coimbatore, Tamil Nadu 641001</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <span>&copy; 2026 MotoParts. All rights reserved. | Spare Parts Ordering System for Motors and Pumps</span>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- ==================== SEARCH MODAL ==================== -->
+    <div class="modal-overlay" id="searchModal">
+        <div class="modal-content search-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Search</h3>
+                <button class="modal-close" id="closeSearchModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="search-input-large">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="modalSearchInput" placeholder="Search spare parts, orders, invoices...">
+                </div>
+                <div class="search-suggestions">
+                    <h4>Recent Searches</h4>
+                    <div class="suggestion-tags">
+                        <span class="tag">Bearing 6205</span>
+                        <span class="tag">Mechanical Seal</span>
+                        <span class="tag">Motor Coupling</span>
+                        <span class="tag">Oil Seal</span>
+                    </div>
+                    <h4>Popular Categories</h4>
+                    <div class="suggestion-tags">
+                        <span class="tag">Water Pumps</span>
+                        <span class="tag">Bearings</span>
+                        <span class="tag">Seals & Gaskets</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="static/js/dashboard.js"></script>
+</body>
+</html>
