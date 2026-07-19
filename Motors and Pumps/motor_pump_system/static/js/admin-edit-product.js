@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var uploadPlaceholder = document.getElementById('uploadPlaceholder');
   var successToast = document.getElementById('successToast');
   var uploadedFiles = [];
+  var newImageValue = null;
 
   /* ===== Sidebar ===== */
   var sidebar = document.getElementById('sidebar');
@@ -91,10 +92,37 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('status').value = product.status;
     document.getElementById('image_url').value = product.image_url;
 
+    newImageValue = product.image_url;
+
     /* Set current image */
     var currentImgBox = document.querySelector('.current-img-box');
     currentImgBox.innerHTML = '<img src="' + product.image_url + '" alt="' + product.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)" onerror="this.parentElement.innerHTML=\'<i class=&quot;fas fa-cog&quot;></i>\'">';
     document.querySelector('.current-img-name').textContent = product.part_number + '.jpg';
+
+    /* Add remove button */
+    addRemoveBtn();
+  }
+
+  function addRemoveBtn() {
+    var currentImg = document.getElementById('currentImage');
+    var existingBtn = currentImg.querySelector('.remove-img-btn');
+    if (existingBtn) existingBtn.remove();
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-img-btn';
+    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    removeBtn.title = 'Remove image';
+    removeBtn.addEventListener('click', function () {
+      newImageValue = '';
+      document.getElementById('image_url').value = '';
+      document.querySelector('.current-img-box').innerHTML = '<i class="fas fa-cog"></i>';
+      document.querySelector('.current-img-name').textContent = 'No image';
+      uploadedFiles = [];
+      uploadPreview.innerHTML = '';
+      uploadPreview.style.display = 'none';
+      uploadPlaceholder.style.display = 'block';
+    });
+    currentImg.appendChild(removeBtn);
   }
 
   /* ===== Validation Helpers ===== */
@@ -206,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
         unit: document.getElementById('unit').value,
         desc: document.getElementById('description').value.trim(),
         status: document.getElementById('status').value,
-        image: document.getElementById('image_url').value.trim() || product.image
+        image: newImageValue || product.image
       });
       MotoStore.refreshCategoryCounts();
 
@@ -253,10 +281,20 @@ document.addEventListener('DOMContentLoaded', function () {
       uploadedFiles.push(f);
       var reader = new FileReader();
       reader.onload = function (ev) {
+        var dataUrl = ev.target.result;
+        newImageValue = dataUrl;
+
+        /* Update current image preview */
+        var currentImgBox = document.querySelector('.current-img-box');
+        currentImgBox.innerHTML = '<img src="' + dataUrl + '" alt="' + f.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)">';
+        document.querySelector('.current-img-name').textContent = f.name;
+        addRemoveBtn();
+
+        /* Show in upload preview */
         var item = document.createElement('div');
         item.className = 'preview-item';
         item.innerHTML =
-          '<img src="' + ev.target.result + '" alt="' + f.name + '">' +
+          '<img src="' + dataUrl + '" alt="' + f.name + '">' +
           '<button type="button" class="preview-remove" data-name="' + f.name + '"><i class="fas fa-times"></i></button>';
         uploadPreview.appendChild(item);
 
@@ -265,7 +303,19 @@ document.addEventListener('DOMContentLoaded', function () {
           var name = item.querySelector('.preview-remove').getAttribute('data-name');
           uploadedFiles = uploadedFiles.filter(function (x) { return x.name !== name; });
           item.remove();
-          if (uploadedFiles.length === 0) { uploadPreview.style.display = 'none'; uploadPlaceholder.style.display = 'block'; }
+          if (uploadedFiles.length === 0) {
+            uploadPreview.style.display = 'none';
+            uploadPlaceholder.style.display = 'block';
+            /* Revert to URL input or empty */
+            var urlVal = document.getElementById('image_url').value.trim();
+            newImageValue = urlVal || '';
+            if (urlVal) {
+              document.querySelector('.current-img-box').innerHTML = '<img src="' + urlVal + '" alt="preview" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)" onerror="this.parentElement.innerHTML=\'<i class=&quot;fas fa-cog&quot;></i>\'">';
+            } else {
+              document.querySelector('.current-img-box').innerHTML = '<i class="fas fa-cog"></i>';
+              document.querySelector('.current-img-name').textContent = 'No image';
+            }
+          }
         });
       };
       reader.readAsDataURL(f);
@@ -277,6 +327,28 @@ document.addEventListener('DOMContentLoaded', function () {
       clearError('image');
     }
   }
+
+  /* ===== Image URL Live Preview ===== */
+  var imageUrlInput = document.getElementById('image_url');
+  var urlPreviewTimer = null;
+  imageUrlInput.addEventListener('input', function () {
+    clearTimeout(urlPreviewTimer);
+    var url = imageUrlInput.value.trim();
+    urlPreviewTimer = setTimeout(function () {
+      if (uploadedFiles.length > 0) return;
+      if (url) {
+        newImageValue = url;
+        var currentImgBox = document.querySelector('.current-img-box');
+        currentImgBox.innerHTML = '<img src="' + url + '" alt="preview" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)" onerror="this.parentElement.innerHTML=\'<i class=&quot;fas fa-cog&quot;></i>\'">';
+        document.querySelector('.current-img-name').textContent = 'URL preview';
+        addRemoveBtn();
+      } else {
+        newImageValue = '';
+        document.querySelector('.current-img-box').innerHTML = '<i class="fas fa-cog"></i>';
+        document.querySelector('.current-img-name').textContent = 'No image';
+      }
+    }, 300);
+  });
 
   /* ===== Escape closes sidebar ===== */
   document.addEventListener('keydown', function (e) {

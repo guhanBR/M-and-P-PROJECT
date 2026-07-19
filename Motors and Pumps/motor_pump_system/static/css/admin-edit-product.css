@@ -23,6 +23,7 @@
   border: 1.5px solid var(--gray-200);
   border-radius: var(--radius-sm);
   margin-bottom: 16px;
+  position: relative;
 }
 
 .current-img-box {
@@ -64,4 +65,29 @@
   background: var(--gray-50);
   border-color: var(--gray-400);
   color: var(--gray-700);
+}
+
+/* ===== Remove Image Button ===== */
+
+.remove-img-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #DC2626;
+  color: white;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 2;
+}
+
+.remove-img-btn:hover {
+  background: #B91C1C;
 }
