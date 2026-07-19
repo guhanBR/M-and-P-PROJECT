@@ -1,32 +1,27 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ===== Dummy Inventory Data ===== */
-  var inventory = [
-    { id: 1, name: 'Deep Groove Ball Bearing 6205', sku: 'BRG-6205-2RS', brand: 'SKF', brandColor: '#0066B3', category: 'Bearings', stock: 45, minStock: 10, color: '#1565C0', icon: 'fas fa-circle' },
-    { id: 2, name: 'Angular Contact Bearing 7310', sku: 'BRG-7310-BECBM', brand: 'SKF', brandColor: '#0066B3', category: 'Bearings', stock: 18, minStock: 10, color: '#1565C0', icon: 'fas fa-circle' },
-    { id: 3, name: 'Mechanical Seal 50mm', sku: 'MS-50-CR', brand: 'John Crane', brandColor: '#E31937', category: 'Mechanical Seals', stock: 5, minStock: 15, color: '#7C3AED', icon: 'fas fa-cog' },
-    { id: 4, name: 'Mechanical Seal 65mm', sku: 'MS-65-EG', brand: 'John Crane', brandColor: '#E31937', category: 'Mechanical Seals', stock: 12, minStock: 15, color: '#7C3AED', icon: 'fas fa-cog' },
-    { id: 5, name: 'Impeller X200 Centrifugal', sku: 'IMP-X200-SS', brand: 'Grundfos', brandColor: '#003F72', category: 'Pump Impellers', stock: 3, minStock: 10, color: '#0D9488', icon: 'fas fa-compact-disc' },
-    { id: 6, name: 'Impeller M150 Closed', sku: 'IMP-M150-CS', brand: 'KSB', brandColor: '#00529B', category: 'Pump Impellers', stock: 7, minStock: 10, color: '#0D9488', icon: 'fas fa-compact-disc' },
-    { id: 7, name: 'Pump Shaft A10', sku: 'SHA-A10-SS', brand: 'Grundfos', brandColor: '#003F72', category: 'Pump Shafts', stock: 2, minStock: 8, color: '#F59E0B', icon: 'fas fa-minus-circle' },
-    { id: 8, name: 'Pump Shaft B20', sku: 'SHA-B20-CS', brand: 'KSB', brandColor: '#00529B', category: 'Pump Shafts', stock: 9, minStock: 8, color: '#F59E0B', icon: 'fas fa-minus-circle' },
-    { id: 9, name: 'Start Capacitor 100μF', sku: 'CAP-START-100', brand: 'ABB', brandColor: '#FF000F', category: 'Capacitors', stock: 60, minStock: 20, color: '#DC2626', icon: 'fas fa-bolt' },
-    { id: 10, name: 'Run Capacitor 30μF', sku: 'CAP-RUN-30', brand: 'ABB', brandColor: '#FF000F', category: 'Capacitors', stock: 75, minStock: 20, color: '#DC2626', icon: 'fas fa-bolt' },
-    { id: 11, name: 'Flexible Coupling 28mm', sku: 'CPL-FLEX-28', brand: 'Siemens', brandColor: '#009999', category: 'Couplings', stock: 22, minStock: 10, color: '#7C3AED', icon: 'fas fa-link' },
-    { id: 12, name: 'Gear Coupling 35mm', sku: 'CPL-GEAR-35', brand: 'Eaton', brandColor: '#00529B', category: 'Couplings', stock: 8, minStock: 10, color: '#7C3AED', icon: 'fas fa-link' },
-    { id: 13, name: 'Axial Fan Blade 300mm', sku: 'FAN-AX-300', brand: 'Siemens', brandColor: '#009999', category: 'Fan Blades', stock: 30, minStock: 15, color: '#0D9488', icon: 'fas fa-fan' },
-    { id: 14, name: 'Cooling Fan Blade 250mm', sku: 'FAN-COOL-250', brand: 'ABB', brandColor: '#FF000F', category: 'Fan Blades', stock: 40, minStock: 15, color: '#0D9488', icon: 'fas fa-fan' },
-    { id: 15, name: 'Oil Seal 35x50x8', sku: 'OS-35508-NBR', brand: 'Parker', brandColor: '#D12020', category: 'Oil Seals', stock: 4, minStock: 12, color: '#F59E0B', icon: 'fas fa-shield-alt' },
-    { id: 16, name: 'Oil Seal 42x60x8', sku: 'OS-42608-VIT', brand: 'Parker', brandColor: '#D12020', category: 'Oil Seals', stock: 15, minStock: 12, color: '#F59E0B', icon: 'fas fa-shield-alt' },
-    { id: 17, name: 'Gasket Set Premium', sku: 'GSK-PREM-SET', brand: 'Eaton', brandColor: '#00529B', category: 'Gaskets', stock: 50, minStock: 15, color: '#16A34A', icon: 'fas fa-layer-group' },
-    { id: 18, name: 'O-Ring Kit 100pc', sku: 'GSK-ORING-100', brand: 'Parker', brandColor: '#D12020', category: 'Gaskets', stock: 35, minStock: 15, color: '#16A34A', icon: 'fas fa-layer-group' },
-    { id: 19, name: 'Thermal Overload Relay', sku: 'ACC-THERM-OL', brand: 'ABB', brandColor: '#FF000F', category: 'Accessories', stock: 25, minStock: 10, color: '#64748B', icon: 'fas fa-thermometer-half' },
-    { id: 20, name: 'Motor Terminal Box', sku: 'ACC-TERM-BOX', brand: 'Siemens', brandColor: '#009999', category: 'Accessories', stock: 40, minStock: 10, color: '#64748B', icon: 'fas fa-box' },
-    { id: 21, name: 'Ball Bearing 6308', sku: 'BRG-6308-ZZ', brand: 'SKF', brandColor: '#0066B3', category: 'Bearings', stock: 0, minStock: 10, color: '#1565C0', icon: 'fas fa-circle' },
-    { id: 22, name: 'Cartridge Seal CS-40', sku: 'MS-CS40-JC', brand: 'John Crane', brandColor: '#E31937', category: 'Mechanical Seals', stock: 2, minStock: 8, color: '#7C3AED', icon: 'fas fa-cog' },
-    { id: 23, name: 'Pump Casing Gasket', sku: 'GSK-CASE-150', brand: 'Grundfos', brandColor: '#003F72', category: 'Gaskets', stock: 60, minStock: 15, color: '#16A34A', icon: 'fas fa-layer-group' },
-    { id: 24, name: 'V-Belt SPA-1120', sku: 'ACC-BELT-SPA', brand: 'Eaton', brandColor: '#00529B', category: 'Accessories', stock: 0, minStock: 10, color: '#64748B', icon: 'fas fa-arrows-alt-v' }
-  ];
+  /* ===== Load from shared store ===== */
+  var inventory = [];
+  var deleteTargetId = null;
+
+  function loadInventory() {
+    var products = MotoStore.getProducts();
+    inventory = products.map(function (p) {
+      var catInfo = MotoStore.getCategoryByName(p.category);
+      return {
+        id: p.id,
+        name: p.name,
+        sku: p.part,
+        brand: p.brand,
+        brandColor: MotoStore.getBrandColor(p.brand),
+        category: p.category,
+        stock: p.stock,
+        minStock: 10,
+        color: MotoStore.getColor(p.category),
+        icon: catInfo ? catInfo.icon : 'fas fa-box'
+      };
+    });
+  }
 
   /* ===== DOM ===== */
   var inventoryBody = document.getElementById('inventoryBody');
@@ -130,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function applyFilters() {
+    loadInventory();
     renderTable(getFiltered());
   }
 
@@ -221,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   updateQty.addEventListener('input', clearError);
 
-  /* Save */
+  /* Save — write back to MotoStore */
   updateSaveBtn.addEventListener('click', function () {
     clearError();
     var val = parseInt(updateQty.value, 10);
@@ -229,9 +225,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!updateTarget) return;
 
     var type = getUpdateType();
-    if (type === 'set') updateTarget.stock = val;
-    else if (type === 'add') updateTarget.stock += val;
-    else updateTarget.stock = Math.max(0, updateTarget.stock - val);
+    var newStock;
+    if (type === 'set') newStock = val;
+    else if (type === 'add') newStock = updateTarget.stock + val;
+    else newStock = Math.max(0, updateTarget.stock - val);
 
     var btnText = updateSaveBtn.querySelector('.btn-text');
     var btnLoader = updateSaveBtn.querySelector('.btn-loader');
@@ -240,6 +237,8 @@ document.addEventListener('DOMContentLoaded', function () {
     updateSaveBtn.disabled = true;
 
     setTimeout(function () {
+      MotoStore.updateStock(updateTarget.id, newStock);
+
       btnText.style.display = 'inline-flex';
       btnLoader.style.display = 'none';
       updateSaveBtn.disabled = false;
@@ -308,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ===== Init ===== */
-  renderTable(inventory);
+  loadInventory();
+  renderTable(getFiltered());
 
 });

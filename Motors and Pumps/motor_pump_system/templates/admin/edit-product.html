@@ -119,6 +119,8 @@
                             <option value="Siemens">Siemens</option>
                             <option value="Eaton">Eaton</option>
                             <option value="Parker">Parker</option>
+                            <option value="WEG">WEG</option>
+                            <option value="Garrett">Garrett</option>
                           </select>
                         </div>
                         <span class="field-error" id="brandError"></span>
@@ -133,12 +135,12 @@
                           <select id="category" name="category" required>
                             <option value="">Select category</option>
                             <option value="Bearings">Bearings</option>
+                            <option value="Capacitors">Capacitors</option>
+                            <option value="Cooling Fans">Cooling Fans</option>
                             <option value="Mechanical Seals">Mechanical Seals</option>
                             <option value="Pump Impellers">Pump Impellers</option>
                             <option value="Pump Shafts">Pump Shafts</option>
-                            <option value="Capacitors">Capacitors</option>
                             <option value="Couplings">Couplings</option>
-                            <option value="Fan Blades">Fan Blades</option>
                             <option value="Oil Seals">Oil Seals</option>
                             <option value="Gaskets">Gaskets</option>
                             <option value="Accessories">Accessories</option>
@@ -173,37 +175,78 @@
                   <div class="form-card-body">
 
                     <div class="form-group">
-                      <label for="motor_model">Compatible Motor Model</label>
+                      <label for="compatible_model">Compatible Model <span class="req">*</span></label>
                       <div class="input-wrap">
                         <i class="fas fa-cogs"></i>
-                        <input type="text" id="motor_model" name="motor_model">
+                        <input type="text" id="compatible_model" name="compatible_model" required>
                       </div>
                       <span class="field-hint">Comma-separated for multiple models</span>
+                      <span class="field-error" id="compatible_modelError"></span>
                     </div>
 
                     <div class="form-group">
-                      <label for="pump_model">Compatible Pump Model</label>
+                      <label for="capacity">Capacity / Power Rating <span class="req">*</span></label>
                       <div class="input-wrap">
-                        <i class="fas fa-water"></i>
-                        <input type="text" id="pump_model" name="pump_model">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <input type="text" id="capacity" name="capacity" required>
                       </div>
-                      <span class="field-hint">Comma-separated for multiple models</span>
+                      <span class="field-error" id="capacityError"></span>
                     </div>
 
                   </div>
                 </div>
 
-                <!-- Specifications -->
+                <!-- Additional Info -->
                 <div class="form-card">
                   <div class="form-card-header">
-                    <i class="fas fa-list-ul"></i>
-                    <h3>Specifications</h3>
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>Additional Information</h3>
                   </div>
                   <div class="form-card-body">
-                    <div class="specs-list" id="specsList"></div>
-                    <button type="button" class="btn-add-spec" id="addSpecBtn">
-                      <i class="fas fa-plus"></i> Add Specification
-                    </button>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="warranty">Warranty <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-shield-alt"></i>
+                          <select id="warranty" name="warranty" required>
+                            <option value="">Select warranty</option>
+                            <option value="3 months">3 months</option>
+                            <option value="6 months">6 months</option>
+                            <option value="12 months">12 months</option>
+                            <option value="24 months">24 months</option>
+                          </select>
+                        </div>
+                        <span class="field-error" id="warrantyError"></span>
+                      </div>
+                      <div class="form-group">
+                        <label for="unit">Unit of Measure <span class="req">*</span></label>
+                        <div class="input-wrap">
+                          <i class="fas fa-ruler"></i>
+                          <select id="unit" name="unit" required>
+                            <option value="">Select unit</option>
+                            <option value="Piece">Piece</option>
+                            <option value="Set">Set</option>
+                            <option value="Box">Box</option>
+                            <option value="Pair">Pair</option>
+                            <option value="Kilogram">Kilogram</option>
+                          </select>
+                        </div>
+                        <span class="field-error" id="unitError"></span>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="status">Product Status <span class="req">*</span></label>
+                      <div class="input-wrap">
+                        <i class="fas fa-toggle-on"></i>
+                        <select id="status" name="status" required>
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
 
@@ -242,11 +285,11 @@
                   </div>
                 </div>
 
-                <!-- Current Image -->
+                <!-- Product Image -->
                 <div class="form-card">
                   <div class="form-card-header">
                     <i class="fas fa-image"></i>
-                    <h3>Current Image</h3>
+                    <h3>Product Image</h3>
                   </div>
                   <div class="form-card-body">
 
@@ -255,6 +298,15 @@
                         <i class="fas fa-cog"></i>
                       </div>
                       <p class="current-img-name">BRG-6205-2RS.jpg</p>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="image_url">Image URL</label>
+                      <div class="input-wrap">
+                        <i class="fas fa-link"></i>
+                        <input type="url" id="image_url" name="image_url">
+                      </div>
+                      <span class="field-hint">Paste a direct image URL</span>
                     </div>
 
                     <div class="upload-zone" id="uploadZone">
@@ -301,6 +353,7 @@
 
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script src="{{ url_for('static', filename='js/admin-edit-product.js') }}"></script>
 </body>
 </html>

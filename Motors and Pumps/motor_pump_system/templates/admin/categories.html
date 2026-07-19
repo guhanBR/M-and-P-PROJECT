@@ -124,11 +124,12 @@
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th class="th-color">Color</th>
+                    <th class="th-color">Icon</th>
                     <th>Category Name</th>
                     <th>Description</th>
                     <th>Total Products</th>
                     <th>Status</th>
+                    <th>Date Created</th>
                     <th class="th-actions">Actions</th>
                   </tr>
                 </thead>
@@ -219,6 +220,7 @@
 
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script src="{{ url_for('static', filename='js/admin-categories.js') }}"></script>
 </body>
 </html>

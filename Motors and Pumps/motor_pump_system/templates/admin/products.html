@@ -95,12 +95,12 @@
                   <select id="categoryFilter">
                     <option value="">All Categories</option>
                     <option value="Bearings">Bearings</option>
+                    <option value="Capacitors">Capacitors</option>
+                    <option value="Cooling Fans">Cooling Fans</option>
                     <option value="Mechanical Seals">Mechanical Seals</option>
                     <option value="Pump Impellers">Pump Impellers</option>
                     <option value="Pump Shafts">Pump Shafts</option>
-                    <option value="Capacitors">Capacitors</option>
                     <option value="Couplings">Couplings</option>
-                    <option value="Fan Blades">Fan Blades</option>
                     <option value="Oil Seals">Oil Seals</option>
                     <option value="Gaskets">Gaskets</option>
                     <option value="Accessories">Accessories</option>
@@ -118,12 +118,26 @@
                     <option value="Siemens">Siemens</option>
                     <option value="Eaton">Eaton</option>
                     <option value="Parker">Parker</option>
+                    <option value="WEG">WEG</option>
+                    <option value="Garrett">Garrett</option>
+                  </select>
+                </div>
+                <div class="filter-select">
+                  <i class="fas fa-sort"></i>
+                  <select id="sortFilter">
+                    <option value="">Sort By</option>
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="price-asc">Price (Low to High)</option>
+                    <option value="price-desc">Price (High to Low)</option>
+                    <option value="stock-asc">Stock (Low to High)</option>
+                    <option value="stock-desc">Stock (High to Low)</option>
                   </select>
                 </div>
               </div>
             </div>
             <div class="toolbar-right">
-              <span class="result-count" id="resultCount">24 products</span>
+              <span class="result-count" id="resultCount">50 products</span>
               <a href="{{ url_for('admin.add_product') }}" class="btn-add">
                 <i class="fas fa-plus"></i> Add Product
               </a>
@@ -141,7 +155,10 @@
                     <th>Part Number</th>
                     <th>Brand</th>
                     <th>Category</th>
+                    <th>Compatible Model</th>
+                    <th>Capacity</th>
                     <th>Price</th>
+                    <th>Warranty</th>
                     <th>Stock</th>
                     <th>Status</th>
                     <th class="th-actions">Actions</th>
@@ -154,6 +171,11 @@
               <i class="fas fa-box-open"></i>
               <p>No products found</p>
               <span>Try adjusting your search or filters</span>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination-wrap" id="paginationWrap">
+              <div class="pagination-info" id="paginationInfo">Showing 1-10 of 50</div>
+              <div class="pagination" id="pagination"></div>
             </div>
           </div>
 
@@ -193,6 +215,7 @@
 
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script src="{{ url_for('static', filename='js/admin-products.js') }}"></script>
 </body>
 </html>

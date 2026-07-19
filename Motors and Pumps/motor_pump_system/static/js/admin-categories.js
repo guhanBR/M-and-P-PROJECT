@@ -1,52 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ===== Dummy Category Data ===== */
-  var categories = [
-    { id: 1, name: 'Bearings', color: '#1565C0', icon: 'fas fa-circle', desc: 'Ball bearings, roller bearings, thrust bearings', products: 2, status: 'active' },
-    { id: 2, name: 'Mechanical Seals', color: '#7C3AED', icon: 'fas fa-cog', desc: 'Single seals, double seals, cartridge seals', products: 2, status: 'active' },
-    { id: 3, name: 'Pump Impellers', color: '#0D9488', icon: 'fas fa-compact-disc', desc: 'Open and closed type impellers', products: 2, status: 'active' },
-    { id: 4, name: 'Pump Shafts', color: '#F59E0B', icon: 'fas fa-minus-circle', desc: 'Precision ground pump shafts', products: 2, status: 'active' },
-    { id: 5, name: 'Capacitors', color: '#DC2626', icon: 'fas fa-bolt', desc: 'Start and run capacitors for motors', products: 2, status: 'active' },
-    { id: 6, name: 'Couplings', color: '#7C3AED', icon: 'fas fa-link', desc: 'Flexible and gear couplings', products: 2, status: 'active' },
-    { id: 7, name: 'Fan Blades', color: '#0D9488', icon: 'fas fa-fan', desc: 'Axial and cooling fan blades', products: 2, status: 'active' },
-    { id: 8, name: 'Oil Seals', color: '#F59E0B', icon: 'fas fa-shield-alt', desc: 'NBR and Viton oil seals', products: 2, status: 'active' },
-    { id: 9, name: 'Gaskets', color: '#16A34A', icon: 'fas fa-layer-group', desc: 'Pump gaskets, O-rings, gasket sets', products: 3, status: 'active' },
-    { id: 10, name: 'Accessories', color: '#64748B', icon: 'fas fa-box', desc: 'Belts, terminal boxes, relays, terminals', products: 3, status: 'active' }
-  ];
-
-  var nextId = 11;
+  /* ===== Load from shared store ===== */
+  var categories = MotoStore.getCategories();
+  var editingId = null;
+  var selectedColor = '#1565C0';
+  var deleteTargetId = null;
 
   /* ===== DOM ===== */
   var catBody = document.getElementById('catBody');
   var searchInput = document.getElementById('searchInput');
   var resultCount = document.getElementById('resultCount');
   var emptyState = document.getElementById('emptyState');
-  var totalCount = document.getElementById('totalCount');
-  var activeCount = document.getElementById('activeCount');
-  var totalProducts = document.getElementById('totalProducts');
-
+  var addCatBtn = document.getElementById('addCatBtn');
   var catModal = document.getElementById('catModal');
   var catModalTitle = document.getElementById('catModalTitle');
   var catModalHeader = document.getElementById('catModalHeader');
-  var catName = document.getElementById('catName');
-  var catDesc = document.getElementById('catDesc');
-  var colorOptions = document.getElementById('colorOptions');
-  var catForm = document.getElementById('catForm');
-
-  var deleteModal = document.getElementById('deleteModal');
-  var deleteCatName = document.getElementById('deleteCatName');
-  var deleteTargetId = null;
-
-  var addCatBtn = document.getElementById('addCatBtn');
   var catModalClose = document.getElementById('catModalClose');
   var catModalCancel = document.getElementById('catModalCancel');
   var catModalSave = document.getElementById('catModalSave');
+  var catName = document.getElementById('catName');
+  var catDesc = document.getElementById('catDesc');
+  var colorOptions = document.getElementById('colorOptions');
+  var deleteModal = document.getElementById('deleteModal');
   var deleteModalClose = document.getElementById('deleteModalClose');
   var deleteCancelBtn = document.getElementById('deleteCancelBtn');
   var deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+  var deleteCatName = document.getElementById('deleteCatName');
 
-  var editingId = null;
-  var selectedColor = '#1565C0';
+  /* ===== Helpers ===== */
+  function formatDate(d) { return MotoStore.formatDate(d); }
 
   /* ===== Render ===== */
   function renderTable(list) {
@@ -62,18 +44,15 @@ document.addEventListener('DOMContentLoaded', function () {
     list.forEach(function (c) {
       var row = document.createElement('tr');
       row.innerHTML =
-        '<td><span class="color-dot" style="background:' + c.color + '"></span></td>' +
-        '<td>' +
-          '<div class="cat-name-cell">' +
-            '<div class="cat-icon-box" style="background:' + c.color + '"><i class="' + c.icon + '"></i></div>' +
-            '<span class="cat-name-text">' + c.name + '</span>' +
-          '</div>' +
-        '</td>' +
-        '<td class="td-desc">' + (c.desc || '—') + '</td>' +
+        '<td><div class="cat-icon-cell" style="background:' + c.color + '"><i class="' + c.icon + '"></i></div></td>' +
+        '<td><span class="cat-name-text">' + c.name + '</span></td>' +
+        '<td class="td-desc">' + (c.desc || '\u2014') + '</td>' +
         '<td class="td-products">' + c.products + '</td>' +
         '<td><span class="status-pill ' + c.status + '"><span class="dot"></span>' + (c.status === 'active' ? 'Active' : 'Inactive') + '</span></td>' +
+        '<td class="td-date">' + formatDate(c.dateCreated) + '</td>' +
         '<td>' +
           '<div class="actions-cell">' +
+            '<button class="action-btn view-products" title="View Products" data-id="' + c.id + '"><i class="fas fa-box"></i></button>' +
             '<button class="action-btn edit" title="Edit" data-id="' + c.id + '"><i class="fas fa-pen"></i></button>' +
             '<button class="action-btn delete" title="Delete" data-id="' + c.id + '"><i class="fas fa-trash"></i></button>' +
           '</div>' +
@@ -81,34 +60,31 @@ document.addEventListener('DOMContentLoaded', function () {
       catBody.appendChild(row);
     });
 
-    updateStats();
     attachRowActions();
   }
 
-  function updateStats() {
-    var total = categories.length;
-    var active = categories.filter(function (c) { return c.status === 'active'; }).length;
-    var products = categories.reduce(function (s, c) { return s + c.products; }, 0);
-    totalCount.textContent = total;
-    activeCount.textContent = active;
-    totalProducts.textContent = products;
-  }
-
-  function getFiltered() {
-    var q = searchInput.value.trim().toLowerCase();
-    return categories.filter(function (c) {
-      return !q || c.name.toLowerCase().indexOf(q) !== -1;
-    });
-  }
-
   function applyFilters() {
-    renderTable(getFiltered());
+    categories = MotoStore.getCategories();
+    updateStats();
+    var q = searchInput.value.trim().toLowerCase();
+    var list = categories.filter(function (c) {
+      return !q || c.name.toLowerCase().indexOf(q) !== -1 || (c.desc && c.desc.toLowerCase().indexOf(q) !== -1);
+    });
+    renderTable(list);
   }
 
   searchInput.addEventListener('input', applyFilters);
 
   /* ===== Row Actions ===== */
   function attachRowActions() {
+    catBody.querySelectorAll('.action-btn.view-products').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = parseInt(btn.getAttribute('data-id'), 10);
+        var c = categories.find(function (x) { return x.id === id; });
+        if (c) window.location.href = '/admin/products?category=' + encodeURIComponent(c.name);
+      });
+    });
+
     catBody.querySelectorAll('.action-btn.edit').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var id = parseInt(btn.getAttribute('data-id'), 10);
@@ -174,10 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   catModalClose.addEventListener('click', closeModal);
   catModalCancel.addEventListener('click', closeModal);
-
-  catModal.addEventListener('click', function (e) {
-    if (e.target === catModal) closeModal();
-  });
+  catModal.addEventListener('click', function (e) { if (e.target === catModal) closeModal(); });
 
   /* ===== Validation ===== */
   function showError(msg) {
@@ -205,7 +178,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!name) { showError('Category name is required'); return; }
     if (name.length < 2) { showError('Name must be at least 2 characters'); return; }
 
-    /* Check duplicate */
     var dup = categories.find(function (c) {
       return c.name.toLowerCase() === name.toLowerCase() && c.id !== editingId;
     });
@@ -219,19 +191,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setTimeout(function () {
       if (editingId !== null) {
-        var c = categories.find(function (x) { return x.id === editingId; });
-        if (c) { c.name = name; c.desc = desc; c.color = selectedColor; }
+        MotoStore.updateCategory(editingId, { name: name, desc: desc, color: selectedColor });
         showToast('Category updated!');
       } else {
-        categories.push({
-          id: nextId++,
-          name: name,
-          color: selectedColor,
-          icon: 'fas fa-tag',
-          desc: desc,
-          products: 0,
-          status: 'active'
-        });
+        MotoStore.addCategory({ name: name, color: selectedColor, icon: 'fas fa-tag', desc: desc });
         showToast('Category added!');
       }
 
@@ -261,7 +224,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   deleteConfirmBtn.addEventListener('click', function () {
     if (deleteTargetId !== null) {
-      categories = categories.filter(function (c) { return c.id !== deleteTargetId; });
+      MotoStore.deleteCategory(deleteTargetId);
+      MotoStore.refreshCategoryCounts();
       applyFilters();
       showToast('Category deleted!');
     }
@@ -327,7 +291,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  /* ===== Update Stats from MotoStore ===== */
+  function updateStats() {
+    var cats = MotoStore.getCategories();
+    var totalCount = cats.length;
+    var activeCount = cats.filter(function(c) { return c.status === 'active'; }).length;
+    var totalProducts = MotoStore.getProducts().length;
+    var el1 = document.getElementById('totalCount');
+    var el2 = document.getElementById('activeCount');
+    var el3 = document.getElementById('totalProducts');
+    if (el1) el1.textContent = totalCount;
+    if (el2) el2.textContent = activeCount;
+    if (el3) el3.textContent = totalProducts;
+  }
+
   /* ===== Init ===== */
-  renderTable(categories);
+  updateStats();
+  applyFilters();
 
 });

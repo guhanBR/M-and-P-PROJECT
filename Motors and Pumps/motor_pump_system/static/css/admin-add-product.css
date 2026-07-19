@@ -449,8 +449,6 @@ textarea:focus {
 
 @media (max-width: 640px) {
   .form-row { grid-template-columns: 1fr; gap: 0; }
-  .spec-row { grid-template-columns: 1fr auto; }
-  .spec-row input:first-child { grid-column: 1 / -1; }
   .form-actions { flex-direction: column-reverse; }
   .btn-reset, .btn-save { width: 100%; justify-content: center; }
   .main-content { padding: 20px 16px; }

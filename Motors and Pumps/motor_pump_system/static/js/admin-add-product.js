@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var form = document.getElementById('addProductForm');
   var saveBtn = document.getElementById('saveBtn');
   var resetBtn = document.getElementById('resetBtn');
-  var specsList = document.getElementById('specsList');
-  var addSpecBtn = document.getElementById('addSpecBtn');
   var uploadZone = document.getElementById('uploadZone');
   var fileInput = document.getElementById('image_file');
   var uploadPreview = document.getElementById('uploadPreview');
@@ -68,12 +66,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function clearAllErrors() {
-    var ids = ['name', 'part_number', 'brand', 'category', 'price', 'stock_quantity', 'reorder_level', 'image'];
+    var ids = ['name', 'part_number', 'brand', 'category', 'price', 'compatible_model', 'capacity', 'warranty', 'unit', 'stock_quantity', 'reorder_level', 'image'];
     ids.forEach(clearError);
   }
 
   /* Live clearing on input */
-  ['name', 'part_number', 'brand', 'category', 'price', 'stock_quantity', 'reorder_level'].forEach(function (id) {
+  ['name', 'part_number', 'brand', 'category', 'price', 'compatible_model', 'capacity', 'warranty', 'unit', 'stock_quantity', 'reorder_level'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', function () { clearError(id); });
@@ -91,6 +89,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var brand = document.getElementById('brand').value;
     var category = document.getElementById('category').value;
     var price = document.getElementById('price').value;
+    var model = document.getElementById('compatible_model').value.trim();
+    var capacity = document.getElementById('capacity').value.trim();
+    var warranty = document.getElementById('warranty').value;
+    var unit = document.getElementById('unit').value;
     var stock = document.getElementById('stock_quantity').value;
     var reorder = document.getElementById('reorder_level').value;
 
@@ -99,6 +101,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!partNumber) { showError('part_number', 'Part number is required'); valid = false; }
     else if (!/^[A-Za-z0-9\-_.]+$/.test(partNumber)) { showError('part_number', 'Invalid part number format'); valid = false; }
+    else {
+      var allProducts = MotoStore.getProducts();
+      var dup = allProducts.filter(function(p) { return p.part === partNumber; });
+      if (dup.length > 0) { showError('part_number', 'Part number already exists'); valid = false; }
+    }
 
     if (!brand) { showError('brand', 'Please select a brand'); valid = false; }
     if (!category) { showError('category', 'Please select a category'); valid = false; }
@@ -106,28 +113,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!price) { showError('price', 'Price is required'); valid = false; }
     else if (isNaN(parseFloat(price)) || parseFloat(price) < 0) { showError('price', 'Enter a valid price'); valid = false; }
 
+    if (!model) { showError('compatible_model', 'Compatible model is required'); valid = false; }
+    if (!capacity) { showError('capacity', 'Capacity / power rating is required'); valid = false; }
+    if (!warranty) { showError('warranty', 'Please select warranty period'); valid = false; }
+    if (!unit) { showError('unit', 'Please select unit of measure'); valid = false; }
+
     if (stock === '' || stock === null) { showError('stock_quantity', 'Stock quantity is required'); valid = false; }
     else if (parseInt(stock, 10) < 0) { showError('stock_quantity', 'Stock cannot be negative'); valid = false; }
 
     if (reorder === '' || reorder === null) { showError('reorder_level', 'Reorder level is required'); valid = false; }
     else if (parseInt(reorder, 10) < 0) { showError('reorder_level', 'Reorder level cannot be negative'); valid = false; }
-
-    /* Validate specs (non-empty key requires non-empty val) */
-    var specRows = specsList.querySelectorAll('.spec-row');
-    specRows.forEach(function (row) {
-      var key = row.querySelector('.spec-key').value.trim();
-      var val = row.querySelector('.spec-val').value.trim();
-      if (key && !val) {
-        row.querySelector('.spec-val').style.borderColor = '#DC2626';
-        valid = false;
-      } else if (!key && val) {
-        row.querySelector('.spec-key').style.borderColor = '#DC2626';
-        valid = false;
-      } else {
-        row.querySelector('.spec-key').style.borderColor = '';
-        row.querySelector('.spec-val').style.borderColor = '';
-      }
-    });
 
     /* Validate image (optional but warn if > 5MB) */
     uploadedFiles.forEach(function (f) {
@@ -159,12 +154,31 @@ document.addEventListener('DOMContentLoaded', function () {
     btnLoader.style.display = 'inline-flex';
     saveBtn.disabled = true;
 
-    /* Simulate save (no backend) */
+    /* Simulate save then write to shared store */
     setTimeout(function () {
+      var product = {
+        name: document.getElementById('name').value.trim(),
+        part: document.getElementById('part_number').value.trim(),
+        brand: document.getElementById('brand').value,
+        category: document.getElementById('category').value,
+        price: parseFloat(document.getElementById('price').value),
+        stock: parseInt(document.getElementById('stock_quantity').value, 10),
+        model: document.getElementById('compatible_model').value.trim(),
+        capacity: document.getElementById('capacity').value.trim(),
+        warranty: document.getElementById('warranty').value,
+        unit: document.getElementById('unit').value,
+        desc: document.getElementById('description').value.trim(),
+        status: document.getElementById('status').value,
+        image: document.getElementById('image_url').value.trim() || 'https://placehold.co/80x80/64748B/fff?text=NEW'
+      };
+      MotoStore.addProduct(product);
+      MotoStore.refreshCategoryCounts();
+
       btnText.style.display = 'inline-flex';
       btnLoader.style.display = 'none';
       saveBtn.disabled = false;
       showToast();
+      setTimeout(function () { window.location.href = '/admin/products'; }, 1500);
     }, 1500);
   });
 
@@ -180,15 +194,6 @@ document.addEventListener('DOMContentLoaded', function () {
     form.reset();
     clearAllErrors();
 
-    /* Reset specs to single empty row */
-    specsList.innerHTML =
-      '<div class="spec-row">' +
-        '<input type="text" class="spec-key" placeholder="Key (e.g. Material)">' +
-        '<input type="text" class="spec-val" placeholder="Value (e.g. SS316)">' +
-        '<button type="button" class="spec-remove" title="Remove"><i class="fas fa-times"></i></button>' +
-      '</div>';
-    attachSpecRemove();
-
     /* Reset upload */
     uploadedFiles = [];
     uploadPreview.innerHTML = '';
@@ -196,34 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
     uploadPlaceholder.style.display = 'block';
     clearError('image');
   });
-
-  /* ===== Specifications ===== */
-  function attachSpecRemove() {
-    specsList.querySelectorAll('.spec-remove').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var rows = specsList.querySelectorAll('.spec-row');
-        if (rows.length > 1) {
-          btn.closest('.spec-row').remove();
-        } else {
-          btn.closest('.spec-row').querySelectorAll('input').forEach(function (i) { i.value = ''; });
-        }
-      });
-    });
-  }
-
-  addSpecBtn.addEventListener('click', function () {
-    var row = document.createElement('div');
-    row.className = 'spec-row';
-    row.innerHTML =
-      '<input type="text" class="spec-key" placeholder="Key (e.g. Material)">' +
-      '<input type="text" class="spec-val" placeholder="Value (e.g. SS316)">' +
-      '<button type="button" class="spec-remove" title="Remove"><i class="fas fa-times"></i></button>';
-    specsList.appendChild(row);
-    attachSpecRemove();
-    row.querySelector('.spec-key').focus();
-  });
-
-  attachSpecRemove();
 
   /* ===== Image Upload ===== */
   uploadZone.addEventListener('click', function () {

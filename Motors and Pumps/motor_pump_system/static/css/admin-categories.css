@@ -142,23 +142,9 @@
 /* ===== Table ===== */
 
 .th-color { width: 48px; }
-.th-actions { width: 120px; text-align: center; }
+.th-actions { width: 140px; text-align: center; }
 
-.color-dot {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  border: 2px solid var(--white);
-  box-shadow: 0 0 0 1px var(--gray-200);
-  display: inline-block;
-}
-
-.cat-name-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cat-icon-box {
+.cat-icon-cell {
   width: 36px; height: 36px;
   border-radius: var(--radius-xs);
   display: flex;
@@ -172,6 +158,12 @@
 .cat-name-text {
   font-weight: 600;
   color: var(--gray-800);
+}
+
+.td-date {
+  font-size: 13px;
+  color: var(--gray-500);
+  white-space: nowrap;
 }
 
 .td-products {
@@ -232,6 +224,9 @@
 
 .action-btn.edit { color: #F59E0B; background: #FEF3C7; border-color: #FDE68A; }
 .action-btn.edit:hover { background: #F59E0B; color: var(--white); }
+
+.action-btn.view-products { color: var(--primary); background: var(--primary-50); border-color: #BFDBFE; }
+.action-btn.view-products:hover { background: var(--primary); color: var(--white); }
 
 .action-btn.delete { color: #DC2626; background: #FEE2E2; border-color: #FECACA; }
 .action-btn.delete:hover { background: #DC2626; color: var(--white); }
@@ -571,6 +566,8 @@ textarea:focus {
   .cat-stats { grid-template-columns: 1fr; }
   .data-table th:nth-child(3),
   .data-table td:nth-child(3) { display: none; }
+  .data-table th:nth-child(6),
+  .data-table td:nth-child(6) { display: none; }
 }
 
 @media (max-width: 640px) {

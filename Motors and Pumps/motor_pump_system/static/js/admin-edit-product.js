@@ -1,36 +1,39 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ===== Sample Product Data (pre-fill) ===== */
-  var product = {
-    id: 5,
-    name: 'Impeller X200 Centrifugal',
-    part_number: 'IMP-X200-SS',
-    brand: 'Grundfos',
-    category: 'Pump Impellers',
-    price: 4500,
-    stock_quantity: 3,
-    reorder_level: 10,
-    description: 'Open type centrifugal impeller made from SS316 stainless steel. Designed for high-efficiency fluid transfer in industrial pump systems. Compatible with Grundfos CR and KSB Etanorm series pumps.',
-    motor_model: 'Siemens 1LE1001, ABB M3AA100, WEG W22',
-    pump_model: 'Grundfos CR 15-5, KSB Etanorm 50-210',
-    image_name: 'IMP-X200-SS.jpg',
-    color: '#0D9488',
-    icon: 'fas fa-compact-disc',
-    specs: {
-      'Material': 'SS316 Stainless Steel',
-      'Diameter': '200mm',
-      'Type': 'Open',
-      'Max Flow': '15 m³/h',
-      'Max Head': '35m',
-      'Weight': '2.8 kg'
-    }
-  };
+  /* ===== Load product from URL or shared store ===== */
+  var productId = null;
+  var urlParts = window.location.pathname.split('/');
+  var lastPart = urlParts[urlParts.length - 1];
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('id')) {
+    productId = parseInt(params.get('id'), 10);
+  } else {
+    productId = parseInt(lastPart, 10);
+  }
+  var product = MotoStore.getProductById(productId);
+
+  if (!product) {
+    product = {
+      id: 5, name: 'Impeller X200 Centrifugal SS316', part_number: 'IMP-X200-SS', brand: 'Grundfos',
+      category: 'Pump Impellers', price: 4500, stock_quantity: 3, reorder_level: 10,
+      description: 'Open type centrifugal impeller made from SS316 stainless steel.',
+      compatible_model: 'Grundfos CR 15-5, KSB Etanorm 50-210', capacity: '200mm / 15m\u00B3/h',
+      warranty: '12 months', unit: 'Piece', status: 'active',
+      image_url: 'https://placehold.co/80x80/0D9488/fff?text=IMP',
+      dateAdded: '2026-01-08', lastUpdated: '2026-06-28'
+    };
+  } else {
+    product.part_number = product.part;
+    product.stock_quantity = product.stock;
+    product.reorder_level = 10;
+    product.description = product.desc;
+    product.compatible_model = product.model;
+    product.image_url = product.image;
+  }
 
   /* ===== DOM References ===== */
   var form = document.getElementById('editProductForm');
   var saveBtn = document.getElementById('saveBtn');
-  var specsList = document.getElementById('specsList');
-  var addSpecBtn = document.getElementById('addSpecBtn');
   var uploadZone = document.getElementById('uploadZone');
   var fileInput = document.getElementById('image_file');
   var uploadPreview = document.getElementById('uploadPreview');
@@ -81,21 +84,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('stock_quantity').value = product.stock_quantity;
     document.getElementById('reorder_level').value = product.reorder_level;
     document.getElementById('description').value = product.description;
-    document.getElementById('motor_model').value = product.motor_model;
-    document.getElementById('pump_model').value = product.pump_model;
-
-    /* Pre-fill specifications */
-    specsList.innerHTML = '';
-    var keys = Object.keys(product.specs);
-    keys.forEach(function (key) {
-      addSpecRow(key, product.specs[key]);
-    });
+    document.getElementById('compatible_model').value = product.compatible_model;
+    document.getElementById('capacity').value = product.capacity;
+    document.getElementById('warranty').value = product.warranty;
+    document.getElementById('unit').value = product.unit;
+    document.getElementById('status').value = product.status;
+    document.getElementById('image_url').value = product.image_url;
 
     /* Set current image */
     var currentImgBox = document.querySelector('.current-img-box');
-    currentImgBox.style.background = product.color;
-    currentImgBox.innerHTML = '<i class="' + product.icon + '"></i>';
-    document.querySelector('.current-img-name').textContent = product.image_name;
+    currentImgBox.innerHTML = '<img src="' + product.image_url + '" alt="' + product.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)" onerror="this.parentElement.innerHTML=\'<i class=&quot;fas fa-cog&quot;></i>\'">';
+    document.querySelector('.current-img-name').textContent = product.part_number + '.jpg';
   }
 
   /* ===== Validation Helpers ===== */
@@ -114,12 +113,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function clearAllErrors() {
-    ['name', 'brand', 'category', 'price', 'stock_quantity', 'reorder_level', 'image'].forEach(clearError);
+    ['name', 'brand', 'category', 'price', 'compatible_model', 'capacity', 'warranty', 'unit', 'stock_quantity', 'reorder_level', 'image'].forEach(clearError);
   }
 
-  ['name', 'brand', 'category', 'price', 'stock_quantity', 'reorder_level'].forEach(function (id) {
+  ['name', 'brand', 'category', 'price', 'compatible_model', 'capacity', 'warranty', 'unit', 'stock_quantity', 'reorder_level'].forEach(function (id) {
     var el = document.getElementById(id);
-    if (el) { el.addEventListener('input', function () { clearError(id); }); }
+    if (el) {
+      el.addEventListener('input', function () { clearError(id); });
+      el.addEventListener('change', function () { clearError(id); });
+    }
   });
 
   /* ===== Validation ===== */
@@ -131,11 +133,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var brand = document.getElementById('brand').value;
     var category = document.getElementById('category').value;
     var price = document.getElementById('price').value;
+    var model = document.getElementById('compatible_model').value.trim();
+    var capacity = document.getElementById('capacity').value.trim();
+    var warranty = document.getElementById('warranty').value;
+    var unit = document.getElementById('unit').value;
     var stock = document.getElementById('stock_quantity').value;
     var reorder = document.getElementById('reorder_level').value;
 
     if (!name) { showError('name', 'Product name is required'); valid = false; }
     else if (name.length < 3) { showError('name', 'Name must be at least 3 characters'); valid = false; }
+
+    var partNumber = document.getElementById('part_number').value.trim();
+    if (partNumber) {
+      var allProducts = MotoStore.getProducts();
+      var dup = allProducts.filter(function(p) { return p.part === partNumber && p.id !== product.id; });
+      if (dup.length > 0) { showError('part_number', 'Part number already exists'); valid = false; }
+    }
 
     if (!brand) { showError('brand', 'Please select a brand'); valid = false; }
     if (!category) { showError('category', 'Please select a category'); valid = false; }
@@ -143,21 +156,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!price) { showError('price', 'Price is required'); valid = false; }
     else if (isNaN(parseFloat(price)) || parseFloat(price) < 0) { showError('price', 'Enter a valid price'); valid = false; }
 
+    if (!model) { showError('compatible_model', 'Compatible model is required'); valid = false; }
+    if (!capacity) { showError('capacity', 'Capacity / power rating is required'); valid = false; }
+    if (!warranty) { showError('warranty', 'Please select warranty period'); valid = false; }
+    if (!unit) { showError('unit', 'Please select unit of measure'); valid = false; }
+
     if (stock === '' || stock === null) { showError('stock_quantity', 'Stock quantity is required'); valid = false; }
     else if (parseInt(stock, 10) < 0) { showError('stock_quantity', 'Stock cannot be negative'); valid = false; }
 
     if (reorder === '' || reorder === null) { showError('reorder_level', 'Reorder level is required'); valid = false; }
     else if (parseInt(reorder, 10) < 0) { showError('reorder_level', 'Reorder level cannot be negative'); valid = false; }
-
-    /* Validate specs */
-    var specRows = specsList.querySelectorAll('.spec-row');
-    specRows.forEach(function (row) {
-      var key = row.querySelector('.spec-key').value.trim();
-      var val = row.querySelector('.spec-val').value.trim();
-      if (key && !val) { row.querySelector('.spec-val').style.borderColor = '#DC2626'; valid = false; }
-      else if (!key && val) { row.querySelector('.spec-key').style.borderColor = '#DC2626'; valid = false; }
-      else { row.querySelector('.spec-key').style.borderColor = ''; row.querySelector('.spec-val').style.borderColor = ''; }
-    });
 
     uploadedFiles.forEach(function (f) {
       if (f.size > 5 * 1024 * 1024) { showError('image', f.name + ' exceeds 5MB limit'); valid = false; }
@@ -185,10 +193,28 @@ document.addEventListener('DOMContentLoaded', function () {
     saveBtn.disabled = true;
 
     setTimeout(function () {
+      MotoStore.updateProduct(product.id, {
+        name: document.getElementById('name').value.trim(),
+        part: document.getElementById('part_number').value.trim(),
+        brand: document.getElementById('brand').value,
+        category: document.getElementById('category').value,
+        price: parseFloat(document.getElementById('price').value),
+        stock: parseInt(document.getElementById('stock_quantity').value, 10),
+        model: document.getElementById('compatible_model').value.trim(),
+        capacity: document.getElementById('capacity').value.trim(),
+        warranty: document.getElementById('warranty').value,
+        unit: document.getElementById('unit').value,
+        desc: document.getElementById('description').value.trim(),
+        status: document.getElementById('status').value,
+        image: document.getElementById('image_url').value.trim() || product.image
+      });
+      MotoStore.refreshCategoryCounts();
+
       btnText.style.display = 'inline-flex';
       btnLoader.style.display = 'none';
       saveBtn.disabled = false;
       showToast();
+      setTimeout(function () { window.location.href = '/admin/products'; }, 1500);
     }, 1500);
   });
 
@@ -196,43 +222,6 @@ document.addEventListener('DOMContentLoaded', function () {
     successToast.classList.add('show');
     setTimeout(function () { successToast.classList.remove('show'); }, 3000);
   }
-
-  /* ===== Specifications ===== */
-  function addSpecRow(key, val) {
-    var row = document.createElement('div');
-    row.className = 'spec-row';
-    row.innerHTML =
-      '<input type="text" class="spec-key" placeholder="Key (e.g. Material)">' +
-      '<input type="text" class="spec-val" placeholder="Value (e.g. SS316)">' +
-      '<button type="button" class="spec-remove" title="Remove"><i class="fas fa-times"></i></button>';
-    if (key) row.querySelector('.spec-key').value = key;
-    if (val) row.querySelector('.spec-val').value = val;
-    specsList.appendChild(row);
-    attachSpecRemove(row);
-  }
-
-  function attachSpecRemove(row) {
-    row.querySelector('.spec-remove').addEventListener('click', function () {
-      var rows = specsList.querySelectorAll('.spec-row');
-      if (rows.length > 1) {
-        row.remove();
-      } else {
-        row.querySelectorAll('input').forEach(function (i) { i.value = ''; });
-      }
-    });
-  }
-
-  addSpecBtn.addEventListener('click', function () {
-    var row = document.createElement('div');
-    row.className = 'spec-row';
-    row.innerHTML =
-      '<input type="text" class="spec-key" placeholder="Key (e.g. Material)">' +
-      '<input type="text" class="spec-val" placeholder="Value (e.g. SS316)">' +
-      '<button type="button" class="spec-remove" title="Remove"><i class="fas fa-times"></i></button>';
-    specsList.appendChild(row);
-    attachSpecRemove(row);
-    row.querySelector('.spec-key').focus();
-  });
 
   /* ===== Image Upload ===== */
   uploadZone.addEventListener('click', function () { fileInput.click(); });
