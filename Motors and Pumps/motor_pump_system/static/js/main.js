@@ -5,7 +5,7 @@
    ================================================ */
 
 var MotoStore = (function () {
-  var KEYS = { products: 'mp_products', categories: 'mp_categories', cart: 'mp_cart', orders: 'mp_orders' };
+  var KEYS = { products: 'mp_products', categories: 'mp_categories', cart: 'mp_cart', orders: 'mp_orders', users: 'mp_users', session: 'mp_session', remember: 'mp_remember' };
 
   /* ===================== SEED DATA ===================== */
 
@@ -85,6 +85,11 @@ var MotoStore = (function () {
     localStorage.setItem(key, JSON.stringify(val));
   }
 
+  var SEED_USERS = [
+    { id: 1, username: 'admin', email: 'admin@example.com', phone: '9876543210', address: 'Admin Office, Chennai', role: 'admin', password: 'admin123' },
+    { id: 2, username: 'customer', email: 'customer@example.com', phone: '9876543211', address: '123 Main Street, Chennai, Tamil Nadu', role: 'customer', password: 'customer123' }
+  ];
+
   function init() {
     if (!get(KEYS.products) || get(KEYS.products).length === 0) {
       set(KEYS.products, SEED_PRODUCTS);
@@ -94,6 +99,9 @@ var MotoStore = (function () {
     }
     if (!get(KEYS.cart)) { set(KEYS.cart, []); }
     if (!get(KEYS.orders)) { set(KEYS.orders, []); }
+    if (!get(KEYS.users) || get(KEYS.users).length === 0) {
+      set(KEYS.users, SEED_USERS);
+    }
   }
 
   /* ===================== PRODUCTS ===================== */
@@ -363,6 +371,78 @@ var MotoStore = (function () {
     return null;
   }
 
+  /* ===================== AUTH ===================== */
+
+  function getUsers() { return get(KEYS.users) || []; }
+
+  function registerUser(data) {
+    var users = getUsers();
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].email === data.email) return { error: 'An account with this email already exists' };
+    }
+    var maxId = 0;
+    for (var j = 0; j < users.length; j++) { if (users[j].id > maxId) maxId = users[j].id; }
+    var user = {
+      id: maxId + 1,
+      username: data.username,
+      email: data.email,
+      phone: data.phone || '',
+      address: data.address || '',
+      role: 'customer',
+      password: data.password
+    };
+    users.push(user);
+    set(KEYS.users, users);
+    return { success: true, user: user };
+  }
+
+  function loginUser(email, password) {
+    var users = getUsers();
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].email === email && users[i].password === password) {
+        var session = { userId: users[i].id, username: users[i].username, email: users[i].email, role: users[i].role, phone: users[i].phone, address: users[i].address };
+        set(KEYS.session, session);
+        return { success: true, user: session };
+      }
+    }
+    return { error: 'Invalid email or password' };
+  }
+
+  function logoutUser() {
+    localStorage.removeItem(KEYS.session);
+  }
+
+  function getCurrentUser() { return get(KEYS.session) || null; }
+
+  function isLoggedIn() { return get(KEYS.session) !== null; }
+
+  function isAdmin() {
+    var u = getCurrentUser();
+    return u && u.role === 'admin';
+  }
+
+  function rememberEmail(email) { set(KEYS.remember, email); }
+
+  function getRememberedEmail() { return get(KEYS.remember) || ''; }
+
+  function updateUserData(data) {
+    var session = getCurrentUser();
+    if (!session) return null;
+    var users = getUsers();
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].id === session.userId) {
+        for (var k in data) { if (data.hasOwnProperty(k)) { users[i][k] = data[k]; } }
+        set(KEYS.users, users);
+        session.username = users[i].username;
+        session.phone = users[i].phone;
+        session.address = users[i].address;
+        set(KEYS.session, session);
+        return session;
+      }
+    }
+    return null;
+  }
+
   function getOrdersByEmail(email) {
     return getOrders().filter(function (o) { return o.email === email; });
   }
@@ -447,6 +527,16 @@ var MotoStore = (function () {
     getOrdersByEmail: getOrdersByEmail,
     placeOrder: placeOrder,
     updateOrderStatus: updateOrderStatus,
+    getOrdersByEmail: getOrdersByEmail,
+    registerUser: registerUser,
+    loginUser: loginUser,
+    logoutUser: logoutUser,
+    getCurrentUser: getCurrentUser,
+    isLoggedIn: isLoggedIn,
+    isAdmin: isAdmin,
+    rememberEmail: rememberEmail,
+    getRememberedEmail: getRememberedEmail,
+    updateUserData: updateUserData,
     getBrands: getBrands,
     getColor: getColor,
     getBrandColor: getBrandColor,
@@ -468,4 +558,20 @@ function updateNavCartBadge() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', updateNavCartBadge);
+/* ===================== NAV AUTH STATE ===================== */
+function updateNavAuth() {
+  var loginBtns = document.querySelectorAll('.btn-gold');
+  var user = MotoStore.getCurrentUser();
+  for (var i = 0; i < loginBtns.length; i++) {
+    if (user) {
+      loginBtns[i].textContent = user.username;
+      loginBtns[i].href = '/dashboard';
+      loginBtns[i].style.fontSize = '0.78rem';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateNavCartBadge();
+  updateNavAuth();
+});

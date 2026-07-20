@@ -115,11 +115,26 @@
     </div>
   </div>
 
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script>
-    const toggleBtn = document.getElementById('togglePassword');
-    const passwordField = document.getElementById('password');
-    const eyeOpen = toggleBtn.querySelector('.eye-open');
-    const eyeClosed = toggleBtn.querySelector('.eye-closed');
+    /* Pre-fill remembered email */
+    var remembered = MotoStore.getRememberedEmail();
+    if (remembered) {
+      document.getElementById('email').value = remembered;
+      var cb = document.querySelector('input[name="remember"]');
+      if (cb) cb.checked = true;
+    }
+
+    /* If already logged in, redirect */
+    if (MotoStore.isLoggedIn()) {
+      var u = MotoStore.getCurrentUser();
+      window.location.href = u && u.role === 'admin' ? '/admin/dashboard' : '/dashboard';
+    }
+
+    var toggleBtn = document.getElementById('togglePassword');
+    var passwordField = document.getElementById('password');
+    var eyeOpen = toggleBtn.querySelector('.eye-open');
+    var eyeClosed = toggleBtn.querySelector('.eye-closed');
 
     toggleBtn.addEventListener('click', function() {
       if (passwordField.type === 'password') {
@@ -133,12 +148,38 @@
       }
     });
 
-    const loginForm = document.getElementById('loginForm');
-    const loginBtn = document.getElementById('loginBtn');
-    loginForm.addEventListener('submit', function() {
+    var loginForm = document.getElementById('loginForm');
+    var loginBtn = document.getElementById('loginBtn');
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var errorEl = document.getElementById('passwordError');
+      var emailErrorEl = document.getElementById('emailError');
+
+      errorEl.textContent = ''; emailErrorEl.textContent = '';
+
+      if (!email) { emailErrorEl.textContent = 'Email is required'; return; }
+      if (!password) { errorEl.textContent = 'Password is required'; return; }
+
+      var remember = document.querySelector('input[name="remember"]');
+      if (remember && remember.checked) { MotoStore.rememberEmail(email); } else { MotoStore.rememberEmail(''); }
+
       loginBtn.querySelector('.btn-text').style.display = 'none';
       loginBtn.querySelector('.btn-loader').style.display = 'inline-flex';
       loginBtn.disabled = true;
+
+      setTimeout(function() {
+        var result = MotoStore.loginUser(email, password);
+        if (result.error) {
+          errorEl.textContent = result.error;
+          loginBtn.querySelector('.btn-text').style.display = 'inline-flex';
+          loginBtn.querySelector('.btn-loader').style.display = 'none';
+          loginBtn.disabled = false;
+        } else {
+          window.location.href = result.user.role === 'admin' ? '/admin/dashboard' : '/dashboard';
+        }
+      }, 600);
     });
   </script>
 </body>

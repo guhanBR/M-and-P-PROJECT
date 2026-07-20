@@ -164,11 +164,12 @@
     </div>
   </div>
 
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script>
-    const toggleBtn = document.getElementById('togglePassword');
-    const passwordField = document.getElementById('password');
-    const eyeOpen = toggleBtn.querySelector('.eye-open');
-    const eyeClosed = toggleBtn.querySelector('.eye-closed');
+    var toggleBtn = document.getElementById('togglePassword');
+    var passwordField = document.getElementById('password');
+    var eyeOpen = toggleBtn.querySelector('.eye-open');
+    var eyeClosed = toggleBtn.querySelector('.eye-closed');
 
     toggleBtn.addEventListener('click', function() {
       if (passwordField.type === 'password') {
@@ -182,13 +183,53 @@
       }
     });
 
-    const form = document.getElementById('registerForm');
-    const btn = document.getElementById('registerBtn');
-    form.addEventListener('submit', function() {
+    var form = document.getElementById('registerForm');
+    var btn = document.getElementById('registerBtn');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var username = document.getElementById('username').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var address = document.getElementById('address').value.trim();
+      var password = document.getElementById('password').value;
+      var confirm_password = document.getElementById('confirm_password').value;
+
+      var errors = form.querySelectorAll('.error-message');
+      errors.forEach(function(el) { el.textContent = ''; });
+
+      if (!username) { errors[0].textContent = 'Username is required'; return; }
+      if (!email) { errors[1].textContent = 'Email is required'; return; }
+      if (!phone) { errors[2].textContent = 'Phone is required'; return; }
+      if (!address) { errors[3].textContent = 'Address is required'; return; }
+      if (!password || password.length < 6) { errors[4].textContent = 'Password must be at least 6 characters'; return; }
+      if (password !== confirm_password) { errors[5].textContent = 'Passwords do not match'; return; }
+
       btn.querySelector('.btn-text').style.display = 'none';
       btn.querySelector('.btn-loader').style.display = 'inline-flex';
       btn.disabled = true;
+
+      setTimeout(function() {
+        var result = MotoStore.registerUser({ username: username, email: email, phone: phone, address: address, password: password });
+        if (result.error) {
+          errors[1].textContent = result.error;
+          btn.querySelector('.btn-text').style.display = 'inline-flex';
+          btn.querySelector('.btn-loader').style.display = 'none';
+          btn.disabled = false;
+        } else {
+          MotoStore.rememberEmail(email);
+          window.location.href = '/auth/login?registered=1';
+        }
+      }, 600);
     });
+
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('registered') === '1') {
+      var flash = document.createElement('div');
+      flash.className = 'flash-message flash-success';
+      flash.textContent = 'Registration successful! Please sign in.';
+      var cardBody = document.querySelector('.card-body');
+      cardBody.insertBefore(flash, cardBody.firstChild);
+    }
   </script>
 </body>
 </html>
